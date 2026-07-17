@@ -25,7 +25,7 @@ Sitio web estático de Jeazy Club, preparado para publicarse con GitHub Pages.
 Busca y actualiza en `index.html`:
 
 - `https://wa.me/` por el enlace completo de WhatsApp.
-- `hola@jeazyclub.mx` por el correo oficial.
+- `https://www.instagram.com/` por el perfil oficial de Instagram.
 - Textos y enlaces del aviso de privacidad, cookies y términos.
 - Productos, beneficios y condiciones definitivas de la membresía.
 
