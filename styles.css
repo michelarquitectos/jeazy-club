@@ -120,10 +120,10 @@ footer{border-top:1px solid var(--line);max-width:var(--max);margin:auto;padding
 .reveal.visible{opacity:1;transform:none}
 
 /* Acceso destacado al portal y movimiento sutil de marca */
-.nav-links .member-nav-link{position:relative;display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border:1px solid rgba(82,232,145,.62);border-radius:9px;background:linear-gradient(180deg,#30d879 0%,#159b52 62%,#0c713b 100%);color:#fff;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -2px 0 rgba(0,0,0,.22),0 5px 0 #075b2f,0 9px 20px rgba(46,204,113,.22);transform:translateY(-2px);text-shadow:0 1px 1px rgba(0,0,0,.32);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease}
-.nav-links .member-nav-link:before{content:"";width:7px;height:7px;margin-right:8px;border-radius:50%;background:#d5ffe7;box-shadow:0 0 10px rgba(213,255,231,.8)}
-.nav-links .member-nav-link:hover{color:#fff;filter:brightness(1.08);transform:translateY(-4px);box-shadow:inset 0 1px 0 rgba(255,255,255,.42),inset 0 -2px 0 rgba(0,0,0,.22),0 7px 0 #075b2f,0 12px 26px rgba(46,204,113,.3)}
-.nav-links .member-nav-link:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 0 #075b2f,0 5px 12px rgba(46,204,113,.18)}
+.nav-links .member-nav-link,.nav>.btn-small{position:relative;display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border:1px solid rgba(82,232,145,.62);border-radius:9px;background:linear-gradient(180deg,#30d879 0%,#159b52 62%,#0c713b 100%);color:#fff;font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -2px 0 rgba(0,0,0,.22),0 5px 0 #075b2f,0 9px 20px rgba(46,204,113,.22);transform:translateY(-2px);text-shadow:0 1px 1px rgba(0,0,0,.32);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease}
+.nav-links .member-nav-link:before,.nav>.btn-small:before{content:"";width:7px;height:7px;margin-right:8px;border-radius:50%;background:#d5ffe7;box-shadow:0 0 10px rgba(213,255,231,.8)}
+.nav-links .member-nav-link:hover,.nav>.btn-small:hover{color:#fff;filter:brightness(1.08);transform:translateY(-4px);box-shadow:inset 0 1px 0 rgba(255,255,255,.42),inset 0 -2px 0 rgba(0,0,0,.22),0 7px 0 #075b2f,0 12px 26px rgba(46,204,113,.3)}
+.nav-links .member-nav-link:active,.nav>.btn-small:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 0 #075b2f,0 5px 12px rgba(46,204,113,.18)}
 .hero-logo{animation:jeazyFloat 5.5s ease-in-out infinite;will-change:transform}
 @keyframes jeazyFloat{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,calc(-50% - 12px)) scale(1.012)}}
 @media(prefers-reduced-motion:reduce){.hero-logo{animation:none}}
