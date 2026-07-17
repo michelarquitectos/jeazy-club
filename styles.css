@@ -194,4 +194,14 @@ footer{border-color:var(--line)}.footer-main p,.footer-main a{color:var(--muted)
 .age-card{padding:30px 22px}
 }
 
+/* Menú claro para vista lateral y móvil; escritorio permanece sin cambios */
+@media(max-width:1000px){
+  .nav-links.open{left:12px;right:12px;top:74px;padding:16px;border:1px solid rgba(21,24,21,.1);border-radius:14px;background:rgba(255,255,252,.98);box-shadow:0 20px 50px rgba(22,30,25,.14);backdrop-filter:blur(18px)}
+  .nav-links.open a{width:100%;padding:12px 14px;color:#272c28;border-radius:9px}
+  .nav-links.open a:hover{background:#f0f1ed;color:#111411}
+  .nav-links.open .member-nav-link{width:100%;min-height:44px;color:#fff;background:linear-gradient(180deg,#28b969 0%,#178f4d 62%,#0f6b3b 100%)}
+  .nav-links.open .member-nav-link:hover{color:#fff;background:linear-gradient(180deg,#2dc573 0%,#199b54 62%,#107340 100%)}
+  .menu{background:#fff;color:#151815;border-color:rgba(21,24,21,.18)}
+}
+
 
