@@ -19,7 +19,7 @@
     <nav class="nav" aria-label="Navegación principal">
       <a class="brand" href="#inicio" aria-label="Jeazy Club, inicio"><img src="assets/jeazy-club-logo.png" alt="Jeazy Club"></a>
       <div class="nav-links" id="navLinks">
-        <a href="#inicio">Inicio</a><a href="#membresia">Membresía</a><a href="#productos">Productos</a><a href="#educacion">Educación</a><a href="#comunidad">Comunidad</a><a href="#contacto">Contacto</a>
+        <a href="#inicio">Inicio</a><a href="#membresia">Membresía</a><a href="#area-socios">Área de socios</a><a href="#productos">Productos</a><a href="#educacion">Educación</a><a href="#comunidad">Comunidad</a><a href="#contacto">Contacto</a>
       </div>
       <a class="btn btn-small" href="#registro">Únete al club</a>
       <button class="menu" type="button" aria-label="Abrir menú" aria-controls="navLinks" aria-expanded="false">Menú</button>
@@ -82,15 +82,18 @@
         <div class="field"><label for="name">Nombre</label><input id="name" name="name" autocomplete="name" required></div>
         <div class="field"><label for="email">Correo electrónico</label><input id="email" name="email" type="email" autocomplete="email" required></div>
         <div class="form-row"><div class="field"><label for="phone">Teléfono</label><input id="phone" name="phone" type="tel" autocomplete="tel"></div><div class="field"><label for="city">Ciudad</label><input id="city" name="city" autocomplete="address-level2"></div></div>
-        <div class="form-step"><span>02</span><b>Verificación de identidad</b></div>
-        <p class="privacy-note">Tus documentos deberán procesarse en un entorno privado y cifrado. Esta demostración no almacena archivos.</p>
-        <div class="upload-grid"><label class="upload"><input type="file" name="ine-front" accept="image/jpeg,image/png,application/pdf" required><b>INE · Frente</b><span>JPG, PNG o PDF</span></label><label class="upload"><input type="file" name="ine-back" accept="image/jpeg,image/png,application/pdf" required><b>INE · Reverso</b><span>JPG, PNG o PDF</span></label></div>
-        <div class="form-step"><span>03</span><b>Autorización digital</b></div>
-        <div class="agreement"><p>Al continuar autorizas la validación de identidad y aceptas las reglas de acceso privado de Jeazy Club.</p><a href="#">Leer acuerdo de membresía →</a></div>
-        <div class="field"><label for="signature">Firma digital (escribe tu nombre completo)</label><input id="signature" name="signature" autocomplete="name" required></div>
-        <label class="check"><input type="checkbox" required> Confirmo que soy mayor de edad, que la información es correcta y acepto el aviso de privacidad y el acuerdo de membresía.</label>
-        <button class="btn" type="submit">Enviar solicitud de membresía</button><p class="form-status" role="status" aria-live="polite"></p>
+        <label class="check"><input type="checkbox" required> Confirmo que soy mayor de edad, que la información es correcta y acepto el aviso de privacidad.</label>
+        <button class="btn" type="submit">Continuar al área de socios</button><p class="form-status" role="status" aria-live="polite"></p>
       </form>
+    </section>
+
+    <section class="member-area section" id="area-socios" aria-labelledby="member-title">
+      <div class="section-intro reveal"><p class="kicker">Área de socios</p><h2 id="member-title">Completa tu acceso al club.</h2></div>
+      <p class="member-intro reveal" id="memberIntro">Después de registrarte, completa el documento de membresía. El menú se habilitará únicamente cuando el paso uno esté confirmado.</p>
+      <div class="member-flow">
+        <article class="member-step reveal" id="documentStep"><div class="step-head"><span>01</span><div><small>REQUISITO OBLIGATORIO</small><h3>Documento y firma</h3></div><b class="step-state" id="documentState">Pendiente</b></div><div class="document-preview"><span>PDF</span><div><strong>Acuerdo de membresía Jeazy Club</strong><p>El documento definitivo se agregará aquí cuando esté disponible.</p></div><button class="btn-link" type="button" disabled>Vista previa próximamente</button></div><form id="documentForm"><div class="field"><label for="memberSignature">Firma digital (nombre completo)</label><input id="memberSignature" name="memberSignature" required></div><label class="check"><input type="checkbox" required> Declaro que leí y acepto el acuerdo de membresía y autorizo el uso de mi firma digital.</label><button class="btn" type="submit">Firmar y continuar</button><p class="form-status" id="documentStatus" role="status" aria-live="polite"></p></form></article>
+        <article class="member-step menu-step locked reveal" id="menuStep" aria-disabled="true"><div class="step-head"><span>02</span><div><small>EXCLUSIVO PARA SOCIOS</small><h3>Menú Jeazy Club</h3></div><b class="step-state" id="menuState">Bloqueado</b></div><div class="locked-message" id="lockedMessage"><strong>Completa primero el documento.</strong><p>Cuando la firma sea confirmada, podrás consultar el menú privado.</p></div><div class="private-menu" id="privateMenu" hidden><div><small>BIENESTAR</small><h4>Selección CBD</h4><p>Productos seleccionados para miembros.</p></div><div><small>EXCLUSIVOS</small><h4>Ediciones Jeazy</h4><p>Lanzamientos y beneficios del club.</p></div><div><small>EXPERIENCIAS</small><h4>Comunidad</h4><p>Actividades y contenidos para socios.</p></div></div></article>
+      </div>
     </section>
 
     <section class="faq section" id="faq" aria-labelledby="faq-title"><div class="section-intro reveal"><p class="kicker">Preguntas frecuentes</p><h2 id="faq-title">Claridad desde el inicio.</h2></div><div class="accordion"><details><summary>¿Qué es Jeazy Club?</summary><p>Una comunidad privada para adultos enfocada en información, bienestar, beneficios y acceso responsable.</p></details><details><summary>¿Necesito una membresía?</summary><p>El contenido general será abierto. Algunos beneficios, experiencias y selecciones estarán reservados para miembros.</p></details><details><summary>¿Cómo protegen mi información?</summary><p>La experiencia se diseñará con recopilación mínima de datos, consentimiento claro y prácticas de seguridad actuales.</p></details><details><summary>¿Jeazy Club realiza envíos?</summary><p>La cobertura, condiciones y tiempos se publicarán antes de habilitar cualquier compra.</p></details></div></section>
