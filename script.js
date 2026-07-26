@@ -2,26 +2,29 @@ const ageGate=document.querySelector('#ageGate');
 const cookie=document.querySelector('#cookie');
 const joinPopup=document.querySelector('#joinPopup');
 const body=document.body;
+const memberIsActive=sessionStorage.getItem('jeazy-session-active')==='yes';
+let ageConfirmedThisVisit=memberIsActive;
 
-if(!localStorage.getItem('jeazy-age')){
+if(!memberIsActive){
   ageGate.classList.add('show');
   body.classList.add('locked');
 }
 
 const showJoinOffer=()=>{
+  if(!ageConfirmedThisVisit||ageGate.classList.contains('show')||memberIsActive)return;
   joinPopup.classList.add('show');
   body.classList.add('locked');
 };
 
 document.querySelector('#ageYes').addEventListener('click',()=>{
-  localStorage.setItem('jeazy-age','yes');
+  ageConfirmedThisVisit=true;
+  localStorage.setItem('jeazy-age-confirmed-at',String(Date.now()));
   ageGate.classList.remove('show');
   body.classList.remove('locked');
   setTimeout(showJoinOffer,350);
 });
 
 document.querySelector('#ageNo').addEventListener('click',()=>{window.location.href='https://www.google.com'});
-if(localStorage.getItem('jeazy-age'))setTimeout(showJoinOffer,500);
 
 const closeJoin=()=>{
   joinPopup.classList.remove('show');
