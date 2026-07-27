@@ -240,4 +240,11 @@ footer{border-color:var(--line)}.footer-main p,.footer-main a{color:var(--muted)
 @media(max-width:900px){.brand-story-visual{height:480px;margin-bottom:80px}.membership-photo{height:320px}}
 @media(max-width:620px){.brand-story-visual{height:410px;margin:0 auto 70px;padding:0 18px}.brand-story-visual:after{inset:0 18px}.brand-story-visual figcaption{left:38px;right:38px;bottom:25px}.brand-story-visual figcaption p{font-size:12px}.membership-card{padding:0}.membership-card-content{padding:25px 22px 28px}.membership-photo{height:240px}}
 
+/* El acceso privado permanece visible y prioritario dentro del menú móvil */
+@media(max-width:1000px){
+  .nav-links.open{z-index:45;max-height:calc(100vh - 94px);overflow-y:auto}
+  .nav-links.open .member-nav-link{display:flex!important;visibility:visible;opacity:1;order:-1;flex:none;justify-content:center;margin:0 0 8px;padding:0 18px!important;transform:none}
+  .nav-links.open .member-nav-link:before{flex:none}
+}
+
 
