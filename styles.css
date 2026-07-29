@@ -232,6 +232,7 @@ footer{border-color:var(--line)}.footer-main p,.footer-main a{color:var(--muted)
 .popup-close{color:#263128}
 .age-no{color:#596659}
 .age-no:hover{color:#16824a}
+.join-card .promotion-note{margin:14px 0 0;padding-top:12px;border-top:1px solid rgba(40,63,39,.12);color:#687468!important;font-size:10px!important;letter-spacing:.04em}
 
 /* Fotografía de marca */
 .hero-art{isolation:isolate;background:#dfe3db!important}.hero-art .hero-background{position:absolute;z-index:-2;inset:-5px;width:calc(100% + 10px);height:calc(100% + 10px);object-fit:cover;object-position:center;filter:blur(1.5px) saturate(.88) brightness(.78) contrast(1.04)!important;transform:scale(1.015)}.hero-art:before{z-index:-1;inset:0;border:0;border-radius:inherit;background:radial-gradient(circle at 50% 47%,rgba(10,25,15,.08) 0,rgba(10,25,15,.2) 42%,rgba(10,20,13,.35) 100%)}.hero-art:after{z-index:-1;background:linear-gradient(180deg,rgba(8,18,11,.04),rgba(8,18,11,.24))!important}.hero-art .hero-logo{filter:drop-shadow(0 16px 28px rgba(5,14,8,.28))}.hero-art .hero-logo img{border-radius:0;box-shadow:none;mix-blend-mode:multiply;filter:saturate(1.12) contrast(1.08)}.hero-art>p{color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7)}
