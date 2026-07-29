@@ -9,3 +9,6 @@
 .legal-signing-form{max-width:900px}.legal-document-list{display:grid;gap:0}.legal-document{grid-template-columns:64px 1fr;margin:18px 0 10px}.legal-document:first-child{margin-top:0}.document-actions{display:flex;align-items:center;gap:18px;margin-top:16px}.document-actions .btn{min-height:40px;padding:0 16px;font-size:10px}.document-download{color:#176c40;font-size:11px;font-weight:600}.document-download:hover{text-decoration:underline}.document-check{margin:0 0 18px;padding-left:4px}
 
 @media(max-width:620px){.legal-document{grid-template-columns:48px 1fr;padding:18px}.legal-document .pdf{width:46px;height:62px}.document-actions{align-items:flex-start;flex-direction:column;gap:10px}}
+
+/* Registro real y confirmación de identidad */
+[hidden]{display:none!important}.btn:disabled{cursor:wait;opacity:.62}.confirmation-panel h2{margin:18px 0 10px;font-size:clamp(26px,3vw,38px);letter-spacing:-.035em}.confirmation-panel>p{max-width:620px;color:var(--muted);font-size:13px}.confirmation-panel .btn{margin-top:12px}.identity-welcome{margin:0 0 24px;color:var(--muted);font-size:13px}.password-hint{margin:0 0 16px;color:var(--muted);font-size:11px}
