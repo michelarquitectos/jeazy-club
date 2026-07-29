@@ -1,1 +1,88 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acceso de socios | Jeazy Club</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../portal.css"></head><body><header class="portal-header"><nav class="portal-nav"><a class="portal-logo" href="../"><img src="../assets/jeazy-club-logo.png" alt="Jeazy Club"></a><span class="portal-label">Portal privado</span></nav></header><main class="shell"><a class="back" href="../">← Volver al sitio público</a><p class="eyebrow">Bienvenido de nuevo</p><h1>Accede a tu<br><span>espacio Jeazy.</span></h1><p class="intro">En esta demostración cualquier dato permite visualizar el portal. La autenticación segura se conectará en una etapa posterior.</p><form class="form-card" id="loginForm"><div class="field"><label for="email">Correo electrónico</label><input id="email" type="email" required autocomplete="email"></div><div class="field"><label for="password">Contraseña</label><input id="password" type="password" required autocomplete="current-password"></div><button class="btn" type="submit">Acceder</button><a class="back" style="margin:16px 0 0 18px" href="../registro/">Crear una cuenta</a></form></main><footer class="portal-footer">Jeazy Club · Acceso exclusivo para socios</footer><script src="../portal.js"></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Acceso de socios | Jeazy Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../portal.css?v=member-code-1">
+</head>
+<body>
+  <header class="portal-header">
+    <nav class="portal-nav">
+      <a class="portal-logo" href="../"><img src="../assets/jeazy-club-logo.png" alt="Jeazy Club"></a>
+      <span class="portal-label">Portal privado</span>
+    </nav>
+  </header>
+
+  <main class="shell access-shell">
+    <a class="back" href="../">← Volver al sitio público</a>
+    <p class="eyebrow">Área de socios</p>
+    <h1>Tu espacio comienza<br><span>con tu código.</span></h1>
+    <p class="intro">Si el club ya te asignó una membresía, activa tu acceso sin volver a registrar tu identificación.</p>
+
+    <section class="member-access-card" aria-labelledby="memberCodeTitle">
+      <div>
+        <p class="eyebrow">Acceso por invitación</p>
+        <h2 id="memberCodeTitle">Ya soy miembro</h2>
+        <p>Ingresa el código personal de nueve caracteres que recibiste por correo.</p>
+      </div>
+      <form id="memberCodeForm" class="code-form">
+        <label for="memberCode">Código personal</label>
+        <div class="code-entry">
+          <input id="memberCode" name="memberCode" inputmode="text" minlength="9" maxlength="9" placeholder="000000000" autocomplete="one-time-code" required>
+          <button class="btn" type="submit">Continuar</button>
+        </div>
+        <p class="form-message" id="memberCodeMessage" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="profile-activation" id="profileActivation" hidden aria-labelledby="activationTitle">
+      <div class="member-confirmation">
+        <span class="status">Código confirmado</span>
+        <p>Bienvenido</p>
+        <h2 id="confirmedMemberName">Juan Ramon Velazquez Romo</h2>
+      </div>
+      <form class="form-card" id="profileSetupForm">
+        <h2 id="activationTitle">Crea tu acceso personal</h2>
+        <p>Confirma tu correo y crea una contraseña para ingresar nuevamente.</p>
+        <div class="fields">
+          <div class="field full">
+            <label for="activationEmail">Correo electrónico</label>
+            <input id="activationEmail" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="activationPassword">Contraseña</label>
+            <input id="activationPassword" type="password" minlength="8" required autocomplete="new-password">
+          </div>
+          <div class="field">
+            <label for="activationPasswordConfirm">Confirmar contraseña</label>
+            <input id="activationPasswordConfirm" type="password" minlength="8" required autocomplete="new-password">
+          </div>
+        </div>
+        <p class="password-hint">Utiliza al menos 8 caracteres. La verificación por correo se conectará en una etapa posterior.</p>
+        <p class="form-message" id="profileSetupMessage" role="status" aria-live="polite"></p>
+        <button class="btn" type="submit">Crear mi perfil</button>
+      </form>
+    </section>
+
+    <section class="existing-login" aria-labelledby="loginTitle">
+      <div>
+        <p class="eyebrow">Cuenta activada</p>
+        <h2 id="loginTitle">¿Ya creaste tu contraseña?</h2>
+      </div>
+      <form class="compact-login" id="loginForm">
+        <div class="field"><label for="email">Correo electrónico</label><input id="email" type="email" required autocomplete="email"></div>
+        <div class="field"><label for="password">Contraseña</label><input id="password" type="password" required autocomplete="current-password"></div>
+        <p class="form-message" id="loginMessage" role="status" aria-live="polite"></p>
+        <button class="btn" type="submit">Acceder</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="portal-footer">Jeazy Club · Acceso exclusivo para socios</footer>
+  <script src="../portal.js?v=member-code-1"></script>
+</body>
+</html>
