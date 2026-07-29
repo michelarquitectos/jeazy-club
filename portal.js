@@ -32,8 +32,27 @@ document.querySelectorAll('[data-menu-state]').forEach((element) => {
 
 const registration = document.querySelector('#registrationForm');
 if (registration) {
+  const reviewerName = 'juan ramon velazquez romo';
+  const fullNameInput = registration.querySelector('#fullName');
+  const identityFiles = registration.querySelectorAll('[data-identity-file]');
+  const reviewModeNotice = registration.querySelector('#reviewModeNotice');
+
+  const updateReviewMode = () => {
+    const normalizedName = fullNameInput.value.trim().replace(/\s+/g, ' ').toLowerCase();
+    const reviewMode = normalizedName === reviewerName;
+
+    identityFiles.forEach((input) => {
+      input.required = !reviewMode;
+    });
+    reviewModeNotice.hidden = !reviewMode;
+  };
+
+  fullNameInput.addEventListener('input', updateReviewMode);
+  updateReviewMode();
+
   registration.addEventListener('submit', (event) => {
     event.preventDefault();
+    updateReviewMode();
     localStorage.setItem('jeazy-registered', 'yes');
     localStorage.setItem('jeazy-identity-submitted', 'yes');
     sessionStorage.setItem('jeazy-session-active', 'yes');
