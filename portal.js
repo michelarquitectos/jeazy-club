@@ -483,3 +483,49 @@ if (paymentCheckout) {
   terms.addEventListener('change', updatePaymentButton);
   updatePaymentButton();
 }
+
+const transferCodeInput = document.querySelector('#transferCode');
+const verifyTransferCodeButton = document.querySelector('#verifyTransferCode');
+const transferCodeMessage = document.querySelector('#transferCodeMessage');
+
+if (transferCodeInput && verifyTransferCodeButton && transferCodeMessage) {
+  const demoTransferCodes = {
+    JR1420MX1: {
+      memberName: 'Juan Ramon Velazquez Romo',
+      amount: '$1,420.00 MXN'
+    }
+  };
+
+  const verifyTransferCode = () => {
+    const code = transferCodeInput.value.trim().toUpperCase();
+    const transfer = demoTransferCodes[code];
+
+    if (!transfer) {
+      transferCodeMessage.textContent = 'El código no es válido o todavía no ha sido autorizado.';
+      transferCodeMessage.className = 'form-message error';
+      transferCodeInput.focus();
+      return;
+    }
+
+    localStorage.setItem('jeazy-payment-completed', 'yes');
+    localStorage.setItem('jeazy-payment-reference', code);
+    localStorage.setItem('jeazy-payment-member', transfer.memberName);
+    transferCodeInput.disabled = true;
+    verifyTransferCodeButton.disabled = true;
+    verifyTransferCodeButton.textContent = 'Cuota confirmada';
+    transferCodeMessage.textContent = `Aportación de ${transfer.amount} confirmada para ${transfer.memberName}. Abriendo el menú…`;
+    transferCodeMessage.className = 'form-message success';
+
+    setTimeout(() => {
+      window.location.href = '../menu/';
+    }, 900);
+  };
+
+  verifyTransferCodeButton.addEventListener('click', verifyTransferCode);
+  transferCodeInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      verifyTransferCode();
+    }
+  });
+}

@@ -67,9 +67,10 @@
             </div>
             <div class="field verification-field">
               <label for="transferCode">Código de verificación de transferencia</label>
-              <input id="transferCode" maxlength="12" placeholder="Ingresa el código recibido">
+              <input id="transferCode" maxlength="12" autocomplete="one-time-code" placeholder="Ingresa el código recibido">
             </div>
-            <button class="btn secondary" type="button" disabled>Verificación próximamente</button>
+            <button class="btn secondary" id="verifyTransferCode" type="button">Verificar código</button>
+            <p class="form-message" id="transferCodeMessage" aria-live="polite">El código será validado para confirmar esta aportación o cuota.</p>
           </section>
         </div>
 
@@ -84,6 +85,6 @@
 
   <footer class="portal-footer">Jeazy Club · No almacenamos datos de tarjetas</footer>
   <script src="../../payment-config.js?v=2"></script>
-  <script src="../../portal.js?v=payment-preview-2"></script>
+  <script src="../../portal.js?v=transfer-demo-1"></script>
 </body>
 </html>
