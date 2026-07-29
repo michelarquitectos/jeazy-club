@@ -35,8 +35,9 @@ if (registration) {
   registration.addEventListener('submit', (event) => {
     event.preventDefault();
     localStorage.setItem('jeazy-registered', 'yes');
+    localStorage.setItem('jeazy-identity-submitted', 'yes');
     sessionStorage.setItem('jeazy-session-active', 'yes');
-    window.location.href = '../socios/';
+    window.location.href = '../socios/documento/';
   });
 }
 
