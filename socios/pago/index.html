@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Aportación o cuota | Jeazy Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../portal.css?v=payment-preview-2">
+</head>
+<body>
+  <header class="portal-header">
+    <nav class="portal-nav">
+      <a class="portal-logo" href="../../"><img src="../../assets/jeazy-club-logo.png" alt="Jeazy Club"></a>
+      <span class="portal-label">Activación de membresía</span>
+    </nav>
+  </header>
+
+  <main class="shell payment-shell">
+    <a class="back" href="../documento/">← Volver a los documentos</a>
+    <p class="eyebrow">Último paso</p>
+    <h1>Aportación<br><span>o cuota.</span></h1>
+    <p class="intro">Tu firma fue registrada. Para completar el alta será necesario cubrir la aportación o cuota de membresía.</p>
+
+    <section class="payment-card">
+      <div class="payment-summary">
+        <span class="status">Pago pendiente</span>
+        <p>Aportación o cuota de membresía</p>
+        <div class="price-breakdown">
+          <div><span>Importe</span><s>$1,670.59 MXN</s></div>
+          <div class="discount-line"><span>Descuento aplicado</span><strong>-15%</strong></div>
+        </div>
+        <small>Total</small>
+        <strong id="paymentFee">$1,420.00 MXN</strong>
+      </div>
+
+      <div class="payment-copy">
+        <p class="preview-label">Vista previa · Sin cobros habilitados</p>
+        <h2>Elige un método de pago</h2>
+        <p>Estos apartados muestran cómo funcionará el cobro. Por el momento no envían ni almacenan información.</p>
+
+        <div class="payment-methods">
+          <section class="payment-method">
+            <div class="method-heading">
+              <span>01</span>
+              <div><h3>Tarjeta de crédito o débito</h3><p>El cobro se realizará posteriormente mediante un procesador autorizado.</p></div>
+            </div>
+            <div class="fields card-preview-fields">
+              <div class="field full"><label>Nombre del titular</label><input placeholder="Como aparece en la tarjeta" disabled></div>
+              <div class="field full"><label>Número de tarjeta</label><input placeholder="0000 0000 0000 0000" disabled></div>
+              <div class="field"><label>Vencimiento</label><input placeholder="MM / AA" disabled></div>
+              <div class="field"><label>Código de seguridad</label><input placeholder="CVV" disabled></div>
+            </div>
+            <button class="btn" type="button" disabled>Pago con tarjeta no disponible</button>
+          </section>
+
+          <section class="payment-method">
+            <div class="method-heading">
+              <span>02</span>
+              <div><h3>Transferencia bancaria</h3><p>Los datos bancarios y la referencia se agregarán cuando el cliente defina este método.</p></div>
+            </div>
+            <div class="transfer-placeholder">
+              <div><small>Banco</small><strong>Pendiente</strong></div>
+              <div><small>CLABE</small><strong>Por definir</strong></div>
+              <div><small>Referencia</small><strong>Se generará al iniciar</strong></div>
+            </div>
+            <div class="field verification-field">
+              <label for="transferCode">Código de verificación de transferencia</label>
+              <input id="transferCode" maxlength="12" placeholder="Ingresa el código recibido">
+            </div>
+            <button class="btn secondary" type="button" disabled>Verificación próximamente</button>
+          </section>
+        </div>
+
+        <label class="check payment-terms-preview">
+          <input type="checkbox" disabled>
+          Confirmo que conozco el importe y acepto los términos aplicables a la aportación o cuota.
+        </label>
+        <p class="form-message">No ingreses información bancaria real. Esta pantalla todavía es una demostración visual.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="portal-footer">Jeazy Club · No almacenamos datos de tarjetas</footer>
+  <script src="../../payment-config.js?v=2"></script>
+  <script src="../../portal.js?v=payment-preview-2"></script>
+</body>
+</html>

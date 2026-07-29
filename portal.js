@@ -6,9 +6,11 @@ if (navButton && navLinks) {
 }
 
 const signed = localStorage.getItem('jeazy-document-signed') === 'yes';
+const paid = localStorage.getItem('jeazy-payment-completed') === 'yes';
+const membershipUnlocked = signed && paid;
 
 document.querySelectorAll('[data-signed-only]').forEach((link) => {
-  if (signed) {
+  if (membershipUnlocked) {
     link.classList.remove('disabled');
     link.removeAttribute('aria-disabled');
     link.href = link.dataset.href;
@@ -18,7 +20,7 @@ document.querySelectorAll('[data-signed-only]').forEach((link) => {
   }
 });
 
-if (signed) {
+if (membershipUnlocked) {
   document.querySelectorAll('.card.locked').forEach((card) => card.classList.remove('locked'));
 }
 
@@ -27,8 +29,12 @@ document.querySelectorAll('[data-sign-state]').forEach((element) => {
 });
 
 document.querySelectorAll('[data-menu-state]').forEach((element) => {
-  element.textContent = signed ? 'Disponible' : 'Bloqueado';
+  element.textContent = membershipUnlocked ? 'Disponible' : signed ? 'Pago pendiente' : 'Bloqueado';
 });
+
+if (document.body.hasAttribute('data-requires-payment') && !membershipUnlocked) {
+  window.location.replace('../pago/');
+}
 
 const registration = document.querySelector('#registrationForm');
 if (registration) {
@@ -283,10 +289,10 @@ if (signing) {
     }
 
     localStorage.setItem('jeazy-document-signed', 'yes');
-    status.textContent = 'Firma registrada correctamente. El menú ya está disponible.';
+    status.textContent = 'Firma registrada correctamente. Continúa con el pago de la membresía.';
     status.className = 'form-message success';
     setTimeout(() => {
-      window.location.href = '../menu/';
+      window.location.href = '../pago/';
     }, 650);
   });
 }
@@ -446,3 +452,34 @@ async function loadSupabaseProfile() {
 }
 
 loadSupabaseProfile();
+
+const paymentCheckout = document.querySelector('#paymentCheckout');
+if (paymentCheckout) {
+  const paymentConfig = window.JEAZY_PAYMENT || {};
+  const terms = document.querySelector('#paymentTerms');
+  const message = document.querySelector('#paymentMessage');
+  const fee = document.querySelector('#paymentFee');
+  fee.textContent = paymentConfig.feeLabel || 'Cuota por definir';
+
+  const updatePaymentButton = () => {
+    const ready = Boolean(paymentConfig.checkoutUrl) && terms.checked;
+    paymentCheckout.classList.toggle('disabled', !ready);
+    paymentCheckout.setAttribute('aria-disabled', String(!ready));
+    if (ready) {
+      paymentCheckout.href = paymentConfig.checkoutUrl;
+      paymentCheckout.target = '_blank';
+      paymentCheckout.rel = 'noopener';
+      message.textContent = `Serás enviado al checkout seguro de ${paymentConfig.provider || 'nuestro procesador autorizado'}.`;
+      message.className = 'form-message success';
+    } else {
+      paymentCheckout.removeAttribute('href');
+      message.textContent = paymentConfig.checkoutUrl
+        ? 'Acepta los términos para continuar.'
+        : 'El enlace se habilitará cuando el procesador de pagos apruebe formalmente la actividad del club.';
+      message.className = 'form-message';
+    }
+  };
+
+  terms.addEventListener('change', updatePaymentButton);
+  updatePaymentButton();
+}
