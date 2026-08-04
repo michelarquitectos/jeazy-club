@@ -41,13 +41,27 @@ async function initializeMembershipState() {
     const { data: sessionData } = await window.jeazySupabase.auth.getSession();
     const user = sessionData.session?.user;
     if (user) {
-      const [acceptances, membership, payment] = await Promise.all([
+      const [acceptances, membership, payment, administrator] = await Promise.all([
         window.jeazySupabase.from('legal_acceptances').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
         window.jeazySupabase.from('memberships').select('status').eq('user_id', user.id).maybeSingle(),
-        window.jeazySupabase.from('payment_verifications').select('status').eq('user_id', user.id).eq('status', 'confirmed').maybeSingle()
+        window.jeazySupabase.from('payment_verifications').select('status').eq('user_id', user.id).eq('status', 'confirmed').maybeSingle(),
+        window.jeazySupabase.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle()
       ]);
       signed = (acceptances.count || 0) >= 2;
       paid = membership.data?.status === 'active' && payment.data?.status === 'confirmed';
+      if (administrator.data) {
+        const navigation = document.querySelector('.portal-links') || document.querySelector('.portal-nav');
+        if (navigation && !navigation.querySelector('[data-admin-link]')) {
+          const adminLink = document.createElement('a');
+          const sociosPosition = window.location.pathname.indexOf('/socios/');
+          const sitePrefix = sociosPosition >= 0 ? window.location.pathname.slice(0, sociosPosition) : '';
+          adminLink.href = `${sitePrefix}/admin/`;
+          adminLink.textContent = 'Administración';
+          adminLink.className = 'admin-nav-link';
+          adminLink.dataset.adminLink = '';
+          navigation.appendChild(adminLink);
+        }
+      }
     }
   } else if (isLocalPreview) {
     signed = localStorage.getItem('jeazy-document-signed') === 'yes';
