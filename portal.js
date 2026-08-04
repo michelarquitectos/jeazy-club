@@ -5,10 +5,12 @@ if (navButton && navLinks) {
   navButton.addEventListener('click', () => navLinks.classList.toggle('open'));
 }
 
-const signed = localStorage.getItem('jeazy-document-signed') === 'yes';
-const paid = localStorage.getItem('jeazy-payment-completed') === 'yes';
-const membershipUnlocked = signed && paid;
+let signed = false;
+let paid = false;
+let membershipUnlocked = false;
+const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
+function applyMembershipState() {
 document.querySelectorAll('[data-signed-only]').forEach((link) => {
   if (membershipUnlocked) {
     link.classList.remove('disabled');
@@ -17,6 +19,7 @@ document.querySelectorAll('[data-signed-only]').forEach((link) => {
   } else {
     link.classList.add('disabled');
     link.setAttribute('aria-disabled', 'true');
+    link.removeAttribute('href');
   }
 });
 
@@ -31,10 +34,31 @@ document.querySelectorAll('[data-sign-state]').forEach((element) => {
 document.querySelectorAll('[data-menu-state]').forEach((element) => {
   element.textContent = membershipUnlocked ? 'Disponible' : signed ? 'Pago pendiente' : 'Bloqueado';
 });
-
-if (document.body.hasAttribute('data-requires-payment') && !membershipUnlocked) {
-  window.location.replace('../pago/');
 }
+
+async function initializeMembershipState() {
+  if (window.jeazySupabase) {
+    const { data: sessionData } = await window.jeazySupabase.auth.getSession();
+    const user = sessionData.session?.user;
+    if (user) {
+      const [acceptances, membership, payment] = await Promise.all([
+        window.jeazySupabase.from('legal_acceptances').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+        window.jeazySupabase.from('memberships').select('status').eq('user_id', user.id).maybeSingle(),
+        window.jeazySupabase.from('payment_verifications').select('status').eq('user_id', user.id).eq('status', 'confirmed').maybeSingle()
+      ]);
+      signed = (acceptances.count || 0) >= 2;
+      paid = membership.data?.status === 'active' && payment.data?.status === 'confirmed';
+    }
+  } else if (isLocalPreview) {
+    signed = localStorage.getItem('jeazy-document-signed') === 'yes';
+    paid = localStorage.getItem('jeazy-payment-completed') === 'yes';
+  }
+  membershipUnlocked = signed && paid;
+  applyMembershipState();
+  if (document.body.hasAttribute('data-requires-payment') && !membershipUnlocked) window.location.replace('../pago/');
+}
+
+initializeMembershipState();
 
 const registration = document.querySelector('#registrationForm');
 if (registration) {
@@ -107,7 +131,9 @@ if (registration) {
     const profileData = {
       full_name: document.querySelector('#fullName').value.trim(),
       birth_date: document.querySelector('#birth').value,
-      phone: document.querySelector('#phone').value.trim()
+      phone: document.querySelector('#phone').value.trim(),
+      city: document.querySelector('#city').value.trim(),
+      state: document.querySelector('#state').value.trim()
     };
     const email = document.querySelector('#mail').value.trim().toLowerCase();
 
@@ -160,6 +186,8 @@ if (registration) {
         email: activeUser.email,
         birth_date: metadata.birth_date || null,
         phone: metadata.phone || null,
+        city: metadata.city || null,
+        state: metadata.state || null,
         updated_at: new Date().toISOString()
       });
 
@@ -168,6 +196,34 @@ if (registration) {
       submitButton.textContent = 'Terminar registro';
       setMessage(identityMessage, `No se pudo guardar el perfil: ${profileError.message}`, 'error');
       return;
+    }
+
+    const profilePhoto = document.querySelector('#profilePhoto')?.files[0];
+    if (profilePhoto) {
+      const photoExtension = profilePhoto.name.split('.').pop().toLowerCase();
+      const photoPath = `${activeUser.id}/profile-${Date.now()}.${photoExtension}`;
+      const { error: photoError } = await window.jeazySupabase.storage
+        .from('profile-photos')
+        .upload(photoPath, profilePhoto, { upsert: false, contentType: profilePhoto.type });
+
+      if (photoError) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Terminar registro';
+        setMessage(identityMessage, `No se pudo guardar la fotografía de perfil: ${photoError.message}`, 'error');
+        return;
+      }
+
+      const { error: photoProfileError } = await window.jeazySupabase
+        .from('profiles')
+        .update({ profile_photo_path: photoPath, updated_at: new Date().toISOString() })
+        .eq('id', activeUser.id);
+
+      if (photoProfileError) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Terminar registro';
+        setMessage(identityMessage, `No se pudo vincular la fotografía al perfil: ${photoProfileError.message}`, 'error');
+        return;
+      }
     }
 
     if (!reviewMode) {
@@ -437,7 +493,7 @@ async function loadSupabaseProfile() {
 
   const { data: profile } = await window.jeazySupabase
     .from('profiles')
-    .select('full_name,email')
+    .select('full_name,email,phone,city,state,profile_photo_path')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -448,6 +504,19 @@ async function loadSupabaseProfile() {
   });
   document.querySelectorAll('[data-profile-email]').forEach((input) => {
     if (email) input.value = email;
+  });
+  document.querySelectorAll('[data-profile-phone]').forEach((input) => { input.value = profile?.phone || 'Pendiente'; });
+  document.querySelectorAll('[data-profile-city]').forEach((input) => { input.value = profile?.city || 'Pendiente'; });
+  document.querySelectorAll('[data-profile-state]').forEach((input) => { input.value = profile?.state || 'Pendiente'; });
+
+  const { data: membership } = await window.jeazySupabase
+    .from('memberships')
+    .select('status')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  document.querySelectorAll('[data-membership-status]').forEach((element) => {
+    const labels = { active: 'Activa', pending: 'Pendiente', suspended: 'Suspendida', cancelled: 'Cancelada' };
+    element.textContent = labels[membership?.status] || 'Pendiente';
   });
 }
 
@@ -496,20 +565,31 @@ if (transferCodeInput && verifyTransferCodeButton && transferCodeMessage) {
     }
   };
 
-  const verifyTransferCode = () => {
+  const verifyTransferCode = async () => {
     const code = transferCodeInput.value.trim().toUpperCase();
-    const transfer = demoTransferCodes[code];
+    let transfer = demoTransferCodes[code];
+
+    if (window.jeazySupabase && !isLocalPreview) {
+      verifyTransferCodeButton.disabled = true;
+      verifyTransferCodeButton.textContent = 'Verificando…';
+      const { data, error } = await window.jeazySupabase.rpc('redeem_payment_code', { p_code: code });
+      transfer = !error && data ? { memberName: 'tu membresía', amount: '$1,420.00 MXN' } : null;
+    }
 
     if (!transfer) {
+      verifyTransferCodeButton.disabled = false;
+      verifyTransferCodeButton.textContent = 'Verificar código';
       transferCodeMessage.textContent = 'El código no es válido o todavía no ha sido autorizado.';
       transferCodeMessage.className = 'form-message error';
       transferCodeInput.focus();
       return;
     }
 
-    localStorage.setItem('jeazy-payment-completed', 'yes');
-    localStorage.setItem('jeazy-payment-reference', code);
-    localStorage.setItem('jeazy-payment-member', transfer.memberName);
+    if (isLocalPreview) {
+      localStorage.setItem('jeazy-payment-completed', 'yes');
+      localStorage.setItem('jeazy-payment-reference', code);
+      localStorage.setItem('jeazy-payment-member', transfer.memberName);
+    }
     transferCodeInput.disabled = true;
     verifyTransferCodeButton.disabled = true;
     verifyTransferCodeButton.textContent = 'Cuota confirmada';

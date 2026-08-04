@@ -31,6 +31,8 @@
         <div class="field"><label for="birth">Fecha de nacimiento</label><input id="birth" type="date" required></div>
         <div class="field"><label for="mail">Correo electrónico</label><input id="mail" type="email" required autocomplete="email"></div>
         <div class="field"><label for="phone">Teléfono</label><input id="phone" type="tel" required autocomplete="tel"></div>
+        <div class="field"><label for="city">Ciudad</label><input id="city" required autocomplete="address-level2"></div>
+        <div class="field"><label for="state">Estado</label><input id="state" required autocomplete="address-level1"></div>
         <div class="field"><label for="newPassword">Crear contraseña</label><input id="newPassword" type="password" minlength="8" required autocomplete="new-password"></div>
         <div class="field"><label for="newPasswordConfirm">Confirmar contraseña</label><input id="newPasswordConfirm" type="password" minlength="8" required autocomplete="new-password"></div>
       </div>
@@ -51,6 +53,11 @@
       <div class="form-step"><span>02</span><b>Verificación de identidad</b></div>
       <p class="identity-welcome">Cuenta confirmada para <strong id="identityMemberName">nuevo socio</strong>.</p>
       <div class="fields" id="identityUploads">
+        <label class="upload field full">
+          <b>Fotografía de perfil · Opcional</b>
+          <small>Una fotografía clara para identificar tu perfil dentro del club.</small>
+          <input id="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp">
+        </label>
         <label class="upload field">
           <b>INE · Frente</b>
           <small>Imagen privada, visible únicamente para revisión autorizada.</small>

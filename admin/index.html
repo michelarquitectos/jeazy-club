@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Administración | Jeazy Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../portal.css?v=admin-1">
+</head>
+<body>
+  <header class="portal-header"><nav class="portal-nav"><a class="portal-logo" href="../"><img src="../assets/jeazy-club-logo.png" alt="Jeazy Club"></a><span class="portal-label">Administración privada</span><button class="btn secondary" id="adminLogout" type="button" hidden>Cerrar sesión</button></nav></header>
+  <main class="shell admin-shell">
+    <section class="admin-login form-card" id="adminLoginPanel">
+      <p class="eyebrow">Acceso restringido</p><h1>Panel de<br><span>administración.</span></h1>
+      <p class="intro">Disponible únicamente para personal autorizado de Jeazy Club.</p>
+      <form id="adminLoginForm" class="fields admin-login-form">
+        <div class="field"><label for="adminEmail">Correo</label><input id="adminEmail" type="email" required autocomplete="email"></div>
+        <div class="field"><label for="adminPassword">Contraseña</label><input id="adminPassword" type="password" required autocomplete="current-password"></div>
+        <button class="btn" type="submit">Ingresar</button><p class="form-message" id="adminLoginMessage" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="adminDashboard" hidden>
+      <div class="admin-heading"><div><p class="eyebrow">Control de membresías</p><h1>Expedientes<br><span>de socios.</span></h1></div><button class="btn secondary" id="refreshAdmin" type="button">Actualizar datos</button></div>
+      <div class="admin-metrics">
+        <article><small>Solicitudes</small><strong id="metricApplications">0</strong></article>
+        <article><small>Por revisar</small><strong id="metricPending">0</strong></article>
+        <article><small>Activos</small><strong id="metricActive">0</strong></article>
+        <article><small>Pagos pendientes</small><strong id="metricPayments">0</strong></article>
+      </div>
+      <div class="admin-filters"><label for="adminSearch">Buscar socio</label><input id="adminSearch" type="search" placeholder="Nombre, correo o teléfono"></div>
+      <p class="form-message" id="adminMessage" aria-live="polite"></p>
+      <section class="admin-member-list" id="adminMemberList"></section>
+    </section>
+  </main>
+  <footer class="portal-footer">Jeazy Club · Información confidencial</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js?v=2"></script><script src="../supabase-client.js?v=1"></script><script src="./admin.js?v=1"></script>
+</body>
+</html>
