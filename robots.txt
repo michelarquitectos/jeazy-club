@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /socios/
+Disallow: /acceso/
 
-Sitemap: https://TU-USUARIO.github.io/TU-REPOSITORIO/sitemap.xml
+Sitemap: https://jeazyclub.mx/sitemap.xml
