@@ -32,3 +32,6 @@
 .portal-links .admin-nav-link,.portal-nav>.admin-nav-link{border:1px solid rgba(27,150,83,.38);background:rgba(46,204,113,.1);color:#126f3e;font-weight:600}
 
 @media(max-width:800px){.admin-heading{align-items:flex-start;flex-direction:column}.admin-metrics{grid-template-columns:repeat(2,1fr)}.admin-member-summary{display:block}.admin-member-state{margin-top:14px;text-align:left}.admin-details{grid-template-columns:repeat(2,1fr)}}
+
+/* Descargas obligatorias posteriores a la creación de cuenta */
+.registration-documents h2{margin:18px 0 10px;font-size:clamp(26px,3vw,38px);letter-spacing:-.035em}.registration-documents>p:not(.form-message){max-width:650px;color:var(--muted);font-size:13px}.registration-document-list{display:grid;gap:14px;margin-top:25px}.registration-document-list .document{margin:0}.registration-document-list h3{margin:0}.registration-download{min-height:40px;padding:0 16px;font-size:10px}.download-state{color:var(--muted);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}.download-state.downloaded{color:#16824a}.registration-documents .btn:disabled{cursor:not-allowed;filter:none;opacity:.42}

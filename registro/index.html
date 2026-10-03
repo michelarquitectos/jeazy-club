@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../portal.css?v=real-registration-1">
+  <link rel="stylesheet" href="../portal.css?v=registration-documents-1">
 </head>
 <body>
   <header class="portal-header">
@@ -22,7 +22,7 @@
     <a class="back" href="../">← Volver al sitio público</a>
     <p class="eyebrow">Registro de nuevo socio</p>
     <h1>Comienza tu camino<br><span>dentro del club.</span></h1>
-    <p class="intro">Crea tu acceso, confirma tu correo y completa la verificación de identidad.</p>
+    <p class="intro">Crea tu acceso, confirma tu correo, descarga la documentación y completa la verificación de identidad.</p>
 
     <form class="form-card" id="registrationForm">
       <div class="form-step"><span>01</span><b>Datos personales y acceso</b></div>
@@ -46,11 +46,47 @@
       <span class="status">Correo enviado</span>
       <h2>Confirma tu correo electrónico</h2>
       <p>Abre el mensaje de Jeazy Club y presiona el enlace de confirmación. Después regresarás aquí para completar tu identificación.</p>
-      <a class="btn secondary" href="../acceso/">Ya confirmé mi cuenta</a>
+      <a class="btn secondary" href="./">Ya confirmé mi cuenta</a>
+    </section>
+
+    <section class="form-card registration-documents" id="registrationDocuments" hidden>
+      <div class="form-step"><span>02</span><b>Documentación para nuevos suscriptores</b></div>
+      <span class="status">Documentos oficiales</span>
+      <h2>Descarga y conserva estos documentos</h2>
+      <p>Antes de continuar con tu identificación, descarga el Aviso de Privacidad y los Términos y Condiciones de Jeazy Club.</p>
+
+      <div class="registration-document-list">
+        <article class="document legal-document">
+          <span class="pdf" aria-hidden="true">PDF</span>
+          <div>
+            <h3>Aviso de Privacidad</h3>
+            <p>Información sobre el tratamiento y la protección de tus datos personales · 3 páginas.</p>
+            <div class="document-actions">
+              <a class="btn registration-download" href="../assets/documentos/aviso-de-privacidad-jeazyclub.pdf" download="Aviso-de-Privacidad-Jeazy-Club.pdf" data-registration-document="privacy">Descargar PDF</a>
+              <span class="download-state" data-download-state="privacy">Pendiente</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="document legal-document">
+          <span class="pdf" aria-hidden="true">PDF</span>
+          <div>
+            <h3>Términos y Condiciones</h3>
+            <p>Condiciones aplicables al uso del sitio y a los servicios de Jeazy Club · 6 páginas.</p>
+            <div class="document-actions">
+              <a class="btn registration-download" href="../assets/documentos/terminos-y-condiciones-jeazyclub.pdf" download="Terminos-y-Condiciones-Jeazy-Club.pdf" data-registration-document="terms">Descargar PDF</a>
+              <span class="download-state" data-download-state="terms">Pendiente</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <p class="form-message" id="documentDownloadMessage" role="status" aria-live="polite">Descarga los dos documentos para continuar.</p>
+      <button class="btn" id="continueToIdentity" type="button" disabled>Continuar con identificación</button>
     </section>
 
     <form class="form-card" id="identityForm" hidden>
-      <div class="form-step"><span>02</span><b>Verificación de identidad</b></div>
+      <div class="form-step"><span>03</span><b>Verificación de identidad</b></div>
       <p class="identity-welcome">Cuenta confirmada para <strong id="identityMemberName">nuevo socio</strong>.</p>
       <div class="fields" id="identityUploads">
         <label class="upload field full">
@@ -80,6 +116,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase-config.js?v=2"></script>
   <script src="../supabase-client.js?v=1"></script>
-  <script src="../portal.js?v=real-registration-1"></script>
+  <script src="../portal.js?v=registration-documents-1"></script>
 </body>
 </html>
