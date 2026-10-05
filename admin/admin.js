@@ -131,6 +131,7 @@ memberList.addEventListener('click', async (event) => {
   if (target.dataset.documentPath || target.dataset.photoPath) {
     const bucket = target.dataset.documentPath ? 'identity-documents' : 'profile-photos';
     const path = target.dataset.documentPath || target.dataset.photoPath;
+    const previewWindow = window.open('', '_blank');
     const { data, error } = await client.storage.from(bucket).createSignedUrl(path, 120);
     if (error) return message(adminMessage, `No fue posible abrir el archivo: ${error.message}`, 'error');
     window.open(data.signedUrl, '_blank', 'noopener');
