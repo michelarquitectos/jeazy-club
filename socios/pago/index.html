@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../portal.css?v=payment-preview-2">
+  <link rel="stylesheet" href="../../portal.css?v=manual-transfer-1">
 </head>
 <body>
   <header class="portal-header">
@@ -36,49 +36,29 @@
       </div>
 
       <div class="payment-copy">
-        <p class="preview-label">Vista previa · Sin cobros habilitados</p>
-        <h2>Elige un método de pago</h2>
-        <p>Estos apartados muestran cómo funcionará el cobro. Por el momento no envían ni almacenan información.</p>
-
-        <div class="payment-methods">
-          <section class="payment-method">
-            <div class="method-heading">
-              <span>01</span>
-              <div><h3>Tarjeta de crédito o débito</h3><p>El cobro se realizará posteriormente mediante un procesador autorizado.</p></div>
-            </div>
-            <div class="fields card-preview-fields">
-              <div class="field full"><label>Nombre del titular</label><input placeholder="Como aparece en la tarjeta" disabled></div>
-              <div class="field full"><label>Número de tarjeta</label><input placeholder="0000 0000 0000 0000" disabled></div>
-              <div class="field"><label>Vencimiento</label><input placeholder="MM / AA" disabled></div>
-              <div class="field"><label>Código de seguridad</label><input placeholder="CVV" disabled></div>
-            </div>
-            <button class="btn" type="button" disabled>Pago con tarjeta no disponible</button>
-          </section>
-
-          <section class="payment-method">
-            <div class="method-heading">
-              <span>02</span>
-              <div><h3>Transferencia bancaria</h3><p>Los datos bancarios y la referencia se agregarán cuando el cliente defina este método.</p></div>
-            </div>
-            <div class="transfer-placeholder">
-              <div><small>Banco</small><strong>Pendiente</strong></div>
-              <div><small>CLABE</small><strong>Por definir</strong></div>
-              <div><small>Referencia</small><strong>Se generará al iniciar</strong></div>
-            </div>
-            <div class="field verification-field">
-              <label for="transferCode">Código de verificación de transferencia</label>
-              <input id="transferCode" maxlength="12" autocomplete="one-time-code" placeholder="Ingresa el código recibido">
-            </div>
-            <button class="btn secondary" id="verifyTransferCode" type="button">Verificar código</button>
-            <p class="form-message" id="transferCodeMessage" aria-live="polite">El código será validado para confirmar esta aportación o cuota.</p>
-          </section>
+        <p class="preview-label">Transferencia bancaria</p>
+        <h2>Completa tu aportación</h2>
+        <p>Usa tu código de solicitud como referencia y envía el comprobante al WhatsApp oficial. El equipo confirmará el depósito antes de activar tu membresía.</p>
+        <div class="payment-steps">
+          <div><span>01</span><p>Realiza la transferencia con los datos indicados.</p></div>
+          <div><span>02</span><p>Envía tu comprobante junto con tu código.</p></div>
+          <div><span>03</span><p>Espera la validación del equipo de Jeazy Club.</p></div>
         </div>
-
-        <label class="check payment-terms-preview">
-          <input type="checkbox" disabled>
-          Confirmo que conozco el importe y acepto los términos aplicables a la aportación o cuota.
-        </label>
-        <p class="form-message">No ingreses información bancaria real. Esta pantalla todavía es una demostración visual.</p>
+        <section class="payment-method transfer-method">
+          <div class="method-heading"><span>✓</span><div><h3>Datos para transferencia</h3><p>La activación no es automática: soporte verificará el depósito real.</p></div></div>
+          <div class="transfer-placeholder">
+            <div><small>Banco</small><strong id="paymentBank">Pendiente de recibir</strong></div>
+            <div><small>Beneficiario</small><strong id="paymentHolder">Pendiente de recibir</strong></div>
+            <div><small>CLABE</small><strong id="paymentClabe">Pendiente de recibir</strong></div>
+          </div>
+          <div class="application-reference">
+            <div><small>Tu código de solicitud</small><strong id="applicationCode">Consultando…</strong></div>
+            <button class="document-link" id="copyApplicationCode" type="button">Copiar código</button>
+          </div>
+          <a class="btn disabled" id="sendReceiptWhatsApp" aria-disabled="true">Enviar comprobante por WhatsApp</a>
+          <p class="form-message" id="paymentStatusMessage" aria-live="polite">Consultando el estado de tu solicitud…</p>
+        </section>
+        <div class="payment-notice"><strong>Importante</strong><p>El código identifica tu expediente; no funciona como contraseña ni demuestra que el pago fue realizado. La membresía se activa únicamente después de la confirmación administrativa.</p></div>
       </div>
     </section>
   </main>
@@ -87,7 +67,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../../supabase-config.js?v=2"></script>
   <script src="../../supabase-client.js?v=1"></script>
-  <script src="../../payment-config.js?v=2"></script>
-  <script src="../../portal.js?v=secure-admin-link-1"></script>
+  <script src="../../payment-config.js?v=manual-transfer-1"></script>
+  <script src="../../portal.js?v=manual-transfer-1"></script>
 </body>
 </html>

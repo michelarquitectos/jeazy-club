@@ -1,5 +1,10 @@
 window.JEAZY_PAYMENT = Object.freeze({
-  checkoutUrl: '',
-  provider: '',
-  feeLabel: '$1,420.00 MXN'
+  feeLabel: '$1,420.00 MXN',
+  amountCents: 142000,
+  discountPercent: 15,
+  bankName: '',
+  accountHolder: '',
+  clabe: '',
+  whatsappNumber: '',
+  paymentWindowDays: 15
 });

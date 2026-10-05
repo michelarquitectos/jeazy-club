@@ -586,90 +586,80 @@ async function loadSupabaseProfile() {
 
 loadSupabaseProfile();
 
-const paymentCheckout = document.querySelector('#paymentCheckout');
-if (paymentCheckout) {
+const applicationCodeElement = document.querySelector('#applicationCode');
+if (applicationCodeElement) {
   const paymentConfig = window.JEAZY_PAYMENT || {};
-  const terms = document.querySelector('#paymentTerms');
-  const message = document.querySelector('#paymentMessage');
   const fee = document.querySelector('#paymentFee');
+  const statusMessage = document.querySelector('#paymentStatusMessage');
+  const whatsappButton = document.querySelector('#sendReceiptWhatsApp');
+  const copyButton = document.querySelector('#copyApplicationCode');
+  const digitsOnly = String(paymentConfig.whatsappNumber || '').replace(/\D/g, '');
+
   fee.textContent = paymentConfig.feeLabel || 'Cuota por definir';
+  document.querySelector('#paymentBank').textContent = paymentConfig.bankName || 'Pendiente de recibir';
+  document.querySelector('#paymentHolder').textContent = paymentConfig.accountHolder || 'Pendiente de recibir';
+  document.querySelector('#paymentClabe').textContent = paymentConfig.clabe || 'Pendiente de recibir';
 
-  const updatePaymentButton = () => {
-    const ready = Boolean(paymentConfig.checkoutUrl) && terms.checked;
-    paymentCheckout.classList.toggle('disabled', !ready);
-    paymentCheckout.setAttribute('aria-disabled', String(!ready));
-    if (ready) {
-      paymentCheckout.href = paymentConfig.checkoutUrl;
-      paymentCheckout.target = '_blank';
-      paymentCheckout.rel = 'noopener';
-      message.textContent = `Serás enviado al checkout seguro de ${paymentConfig.provider || 'nuestro procesador autorizado'}.`;
-      message.className = 'form-message success';
-    } else {
-      paymentCheckout.removeAttribute('href');
-      message.textContent = paymentConfig.checkoutUrl
-        ? 'Acepta los términos para continuar.'
-        : 'El enlace se habilitará cuando el procesador de pagos apruebe formalmente la actividad del club.';
-      message.className = 'form-message';
-    }
+  const setPaymentStatus = (text, type = '') => {
+    statusMessage.textContent = text;
+    statusMessage.className = `form-message ${type}`.trim();
   };
 
-  terms.addEventListener('change', updatePaymentButton);
-  updatePaymentButton();
-}
-
-const transferCodeInput = document.querySelector('#transferCode');
-const verifyTransferCodeButton = document.querySelector('#verifyTransferCode');
-const transferCodeMessage = document.querySelector('#transferCodeMessage');
-
-if (transferCodeInput && verifyTransferCodeButton && transferCodeMessage) {
-  const demoTransferCodes = {
-    JR1420MX1: {
-      memberName: 'Juan Ramon Velazquez Romo',
-      amount: '$1,420.00 MXN'
-    }
-  };
-
-  const verifyTransferCode = async () => {
-    const code = transferCodeInput.value.trim().toUpperCase();
-    let transfer = demoTransferCodes[code];
-
-    if (window.jeazySupabase && !isLocalPreview) {
-      verifyTransferCodeButton.disabled = true;
-      verifyTransferCodeButton.textContent = 'Verificando…';
-      const { data, error } = await window.jeazySupabase.rpc('redeem_payment_code', { p_code: code });
-      transfer = !error && data ? { memberName: 'tu membresía', amount: '$1,420.00 MXN' } : null;
-    }
-
-    if (!transfer) {
-      verifyTransferCodeButton.disabled = false;
-      verifyTransferCodeButton.textContent = 'Verificar código';
-      transferCodeMessage.textContent = 'El código no es válido o todavía no ha sido autorizado.';
-      transferCodeMessage.className = 'form-message error';
-      transferCodeInput.focus();
+  const initializeManualTransfer = async () => {
+    if (!window.jeazySupabase) {
+      setPaymentStatus('No fue posible conectar con el sistema. Inténtalo nuevamente.', 'error');
       return;
     }
 
-    if (isLocalPreview) {
-      localStorage.setItem('jeazy-payment-completed', 'yes');
-      localStorage.setItem('jeazy-payment-reference', code);
-      localStorage.setItem('jeazy-payment-member', transfer.memberName);
+    const { data: sessionData } = await window.jeazySupabase.auth.getSession();
+    const user = sessionData.session?.user;
+    if (!user) {
+      setPaymentStatus('Inicia sesión para consultar tu código y el estado de tu membresía.', 'error');
+      return;
     }
-    transferCodeInput.disabled = true;
-    verifyTransferCodeButton.disabled = true;
-    verifyTransferCodeButton.textContent = 'Cuota confirmada';
-    transferCodeMessage.textContent = `Aportación de ${transfer.amount} confirmada para ${transfer.memberName}. Abriendo el menú…`;
-    transferCodeMessage.className = 'form-message success';
 
-    setTimeout(() => {
-      window.location.href = '../menu/';
-    }, 900);
+    const [applicationResult, paymentResult, membershipResult] = await Promise.all([
+      window.jeazySupabase.from('membership_applications').select('application_code,status,payment_due_at').eq('user_id', user.id).maybeSingle(),
+      window.jeazySupabase.from('payment_verifications').select('status,confirmed_at').eq('user_id', user.id).maybeSingle(),
+      window.jeazySupabase.from('memberships').select('status').eq('user_id', user.id).maybeSingle()
+    ]);
+
+    if (applicationResult.error || !applicationResult.data) {
+      setPaymentStatus('No encontramos una solicitud activa para esta cuenta.', 'error');
+      applicationCodeElement.textContent = 'No disponible';
+      return;
+    }
+
+    const code = applicationResult.data.application_code;
+    applicationCodeElement.textContent = code || 'Pendiente de generar';
+    copyButton.disabled = !code;
+    copyButton.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(code);
+      copyButton.textContent = 'Código copiado';
+      setTimeout(() => { copyButton.textContent = 'Copiar código'; }, 1600);
+    });
+
+    if (paymentResult.data?.status === 'confirmed' && membershipResult.data?.status === 'active') {
+      whatsappButton.textContent = 'Entrar al menú de socios';
+      whatsappButton.href = '../menu/';
+      whatsappButton.classList.remove('disabled');
+      whatsappButton.setAttribute('aria-disabled', 'false');
+      setPaymentStatus('Tu transferencia fue confirmada y tu membresía está activa.', 'success');
+      return;
+    }
+
+    if (digitsOnly) {
+      const whatsappText = `Hola, envío mi comprobante de aportación de Jeazy Club. Código de solicitud: ${code}.`;
+      whatsappButton.href = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(whatsappText)}`;
+      whatsappButton.target = '_blank';
+      whatsappButton.rel = 'noopener';
+      whatsappButton.classList.remove('disabled');
+      whatsappButton.setAttribute('aria-disabled', 'false');
+      setPaymentStatus('Tu solicitud está pendiente. Envía el comprobante y conserva tu código de referencia.');
+    } else {
+      setPaymentStatus('Jeazy Club confirmará próximamente los datos bancarios y el WhatsApp oficial. Tu solicitud permanece guardada.');
+    }
   };
 
-  verifyTransferCodeButton.addEventListener('click', verifyTransferCode);
-  transferCodeInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      verifyTransferCode();
-    }
-  });
+  initializeManualTransfer();
 }

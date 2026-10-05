@@ -34,10 +34,12 @@ function renderMembers(rows) {
     return;
   }
 
+  const statusLabels = { submitted: 'Solicitud recibida', under_review: 'En revisión', approved: 'Identidad aprobada', rejected: 'Rechazada' };
+  const paymentLabels = { pending: 'Esperando comprobante', confirmed: 'Transferencia confirmada', rejected: 'Pago rechazado' };
   memberList.innerHTML = filtered.map(({ profile, application, documents, membership, payment, signatures }) => `
     <article class="admin-member" data-user-id="${escapeHtml(profile.id)}">
       <div class="admin-member-summary">
-        <div><span class="status">${escapeHtml(application?.status || 'sin solicitud')}</span><h2>${escapeHtml(profile.full_name)}</h2><p>${escapeHtml(profile.email)} · ${escapeHtml(profile.phone || 'Sin teléfono')}</p></div>
+        <div><span class="status">${escapeHtml(statusLabels[application?.status] || 'Sin solicitud')}</span><h2>${escapeHtml(profile.full_name)}</h2><p>${escapeHtml(profile.email)} · ${escapeHtml(profile.phone || 'Sin teléfono')}</p></div>
         <div class="admin-member-state"><small>Membresía</small><strong>${escapeHtml(membership?.status || 'pendiente')}</strong></div>
       </div>
       <div class="admin-details">
@@ -45,8 +47,9 @@ function renderMembers(rows) {
         <div><small>Nacimiento</small><strong>${escapeHtml(profile.birth_date || 'Pendiente')}</strong></div>
         <div><small>INE</small><strong>${documents.length}/2 archivos</strong></div>
         <div><small>Firmas</small><strong>${signatures} documentos</strong></div>
-        <div><small>Cuota</small><strong>${escapeHtml(payment?.status || 'pendiente')}</strong></div>
+        <div><small>Cuota</small><strong>${escapeHtml(paymentLabels[payment?.status] || 'Pendiente')}</strong></div>
       </div>
+      <div class="admin-reference"><small>Código de solicitud</small><strong>${escapeHtml(application?.application_code || 'Se generará al actualizar la base')}</strong></div>
       <div class="admin-documents">
         ${documents.map((document) => `<button class="document-link" type="button" data-document-path="${escapeHtml(document.storage_path)}">Ver INE ${document.document_side === 'front' ? 'frente' : 'reverso'}</button>`).join('') || '<span>Identificación no disponible</span>'}
         ${profile.profile_photo_path ? `<button class="document-link" type="button" data-photo-path="${escapeHtml(profile.profile_photo_path)}">Ver foto de perfil</button>` : ''}
@@ -54,8 +57,8 @@ function renderMembers(rows) {
       <div class="admin-actions">
         <button class="btn" type="button" data-review="approved">Aprobar identidad</button>
         <button class="btn secondary" type="button" data-review="rejected">Rechazar</button>
-        <button class="btn secondary" type="button" data-generate-payment>Generar código</button>
-        <button class="btn secondary" type="button" data-payment="confirmed">Confirmar cuota</button>
+        <button class="btn secondary" type="button" data-copy-reference="${escapeHtml(application?.application_code || '')}" ${application?.application_code ? '' : 'disabled'}>Copiar referencia</button>
+        <button class="btn secondary" type="button" data-payment="confirmed" ${application?.status === 'approved' && documents.filter((document) => document.review_status === 'approved').length === 2 && signatures >= 2 ? '' : 'disabled'}>Confirmar transferencia</button>
         <button class="btn secondary" type="button" data-membership="suspended">Suspender</button>
       </div>
     </article>`).join('');
@@ -145,19 +148,23 @@ memberList.addEventListener('click', async (event) => {
     return;
   }
 
+  if (target.hasAttribute('data-copy-reference')) {
+    await navigator.clipboard.writeText(target.dataset.copyReference);
+    message(adminMessage, `Referencia copiada: ${target.dataset.copyReference}`, 'success');
+    return;
+  }
+
   target.disabled = true;
   let result;
   if (target.dataset.review) {
-    result = await client.from('identity_documents').update({ review_status: target.dataset.review }).eq('user_id', userId);
-    if (!result.error) result = await client.from('membership_applications').update({ status: target.dataset.review === 'approved' ? 'approved' : 'rejected', reviewed_at: new Date().toISOString() }).eq('user_id', userId);
-  } else if (target.hasAttribute('data-generate-payment')) {
-    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    const code = Array.from(crypto.getRandomValues(new Uint8Array(9)), (value) => alphabet[value % alphabet.length]).join('');
-    result = await client.from('payment_verifications').upsert({ user_id: userId, verification_code: code, status: 'pending', amount_cents: 142000, discount_percent: 15 }, { onConflict: 'user_id' });
-    if (!result.error) message(adminMessage, `Código generado: ${code}. Compártelo únicamente después de confirmar la transferencia.`, 'success');
+    result = await client.rpc('admin_review_application', { p_user_id: userId, p_decision: target.dataset.review });
   } else if (target.dataset.payment) {
-    result = await client.from('payment_verifications').upsert({ user_id: userId, status: 'confirmed', confirmed_at: new Date().toISOString(), amount_cents: 142000, discount_percent: 15 }, { onConflict: 'user_id' });
-    if (!result.error) result = await client.from('memberships').upsert({ user_id: userId, status: 'active', activated_at: new Date().toISOString() });
+    const person = adminRows.find((row) => row.profile.id === userId)?.profile.full_name || 'este socio';
+    if (!window.confirm(`¿Confirmas que el depósito real de ${person} ya aparece en la cuenta bancaria? Esta acción activará su membresía.`)) {
+      target.disabled = false;
+      return;
+    }
+    result = await client.rpc('admin_confirm_transfer', { p_user_id: userId });
   } else if (target.dataset.membership) {
     result = await client.from('memberships').upsert({ user_id: userId, status: target.dataset.membership });
   }
