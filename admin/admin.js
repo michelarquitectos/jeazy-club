@@ -133,8 +133,15 @@ memberList.addEventListener('click', async (event) => {
     const path = target.dataset.documentPath || target.dataset.photoPath;
     const previewWindow = window.open('', '_blank');
     const { data, error } = await client.storage.from(bucket).createSignedUrl(path, 120);
-    if (error) return message(adminMessage, `No fue posible abrir el archivo: ${error.message}`, 'error');
-    window.open(data.signedUrl, '_blank', 'noopener');
+    if (error) {
+      previewWindow?.close();
+      return message(adminMessage, `No fue posible abrir el archivo: ${error.message}`, 'error');
+    }
+    if (!previewWindow) {
+      return message(adminMessage, 'El navegador bloqueó la vista. Permite ventanas emergentes para jeazyclub.mx e inténtalo nuevamente.', 'error');
+    }
+    previewWindow.opener = null;
+    previewWindow.location.href = data.signedUrl;
     return;
   }
 
