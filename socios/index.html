@@ -1,1 +1,92 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Área de socios | Jeazy Club</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../portal.css?v=secure-membership-1"></head><body><header class="portal-header"><nav class="portal-nav"><a class="portal-logo" href="../"><img src="../assets/jeazy-club-logo.png" alt="Jeazy Club"></a><span class="portal-label">Área de socios</span><button class="mobile-menu">Menú</button><div class="portal-links"><a class="active" href="./">Inicio</a><a href="documento/">Documento</a><a data-signed-only data-href="menu/">Menú</a><a href="perfil/">Perfil</a><a href="ayuda/">Ayuda</a></div></nav></header><main class="shell"><p class="eyebrow">Tu membresía</p><h1>Todo listo para<br><span>comenzar.</span></h1><p class="intro">Completa los pasos pendientes para activar todas las funciones de tu membresía.</p><div class="progress"><div class="progress-item done"><span>01</span><div><small>Solicitud</small><b>Registro recibido</b></div></div><div class="progress-item current"><span>02</span><div><small>Documento</small><b data-sign-state>Pendiente</b></div></div><div class="progress-item"><span>03</span><div><small>Membresía</small><b data-menu-state>Bloqueado</b></div></div></div><div class="grid"><article class="card"><span class="status" data-sign-state>Pendiente</span><h2>Acuerdo de membresía</h2><p>Lee los documentos y completa la firma digital para continuar.</p><a class="btn" href="documento/">Revisar documentos</a></article><article class="card locked"><div class="lock-message"><strong>Menú privado</strong><p>Se habilita después de completar la documentación y confirmar la cuota.</p><a class="btn disabled" data-signed-only data-href="menu/">Ver menú</a></div><h2>Selección para socios</h2><p>Información exclusiva para miembros activos.</p></article></div></main><footer class="portal-footer">Jeazy Club · Área exclusiva para socios adultos</footer><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="../supabase-config.js?v=2"></script><script src="../supabase-client.js?v=1"></script><script src="../portal.js?v=secure-membership-1"></script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mi portal | Jeazy Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../portal.css?v=member-journey-2">
+</head>
+<body data-local-preview>
+  <header class="portal-header">
+    <nav class="portal-nav">
+      <a class="portal-logo" href="../"><img src="../assets/jeazy-club-logo.png" alt="Jeazy Club"></a>
+      <span class="portal-label">Portal de socios</span>
+      <button class="mobile-menu" type="button" aria-label="Abrir navegación">Menú</button>
+      <div class="portal-links">
+        <a class="active" href="./">Inicio</a>
+        <a href="../registro/">Mi expediente</a>
+        <a data-signed-only data-href="menu/">Menú privado</a>
+        <a href="perfil/">Perfil</a>
+        <a href="ayuda/">Ayuda</a>
+        <button class="nav-logout" type="button" data-logout>Cerrar sesión</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="shell member-dashboard" id="memberDashboard" aria-busy="true">
+    <div class="dashboard-heading">
+      <div>
+        <p class="eyebrow">Mi membresía</p>
+        <h1>Hola, <span data-member-name>socio</span>.</h1>
+        <p class="intro" id="journeyPrimaryText">Estamos consultando el avance de tu expediente.</p>
+      </div>
+      <div class="dashboard-state">
+        <small>Estado actual</small>
+        <strong data-journey-status>Consultando…</strong>
+      </div>
+    </div>
+
+    <section class="journey-card" aria-label="Avance de la membresía">
+      <div class="journey-steps">
+        <article class="journey-step" data-step="account"><span>01</span><div><small>Cuenta</small><b data-step-label>Completado</b></div></article>
+        <article class="journey-step" data-step="documents"><span>02</span><div><small>Documentos</small><b data-step-label>Consultando</b></div></article>
+        <article class="journey-step" data-step="identity"><span>03</span><div><small>Identificación</small><b data-step-label>Consultando</b></div></article>
+        <article class="journey-step" data-step="contact"><span>04</span><div><small>WhatsApp</small><b data-step-label>Consultando</b></div></article>
+        <article class="journey-step" data-step="active"><span>05</span><div><small>Activación</small><b data-step-label>Consultando</b></div></article>
+      </div>
+      <div class="journey-action">
+        <div><small>Siguiente paso recomendado</small><p>Avanza desde aquí sin buscar otra pantalla.</p></div>
+        <a class="btn" id="journeyPrimaryAction" href="../registro/">Continuar mi expediente</a>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="dashboard-card contact-card">
+        <div>
+          <span class="status">Contacto directo</span>
+          <h2>Continúa por WhatsApp</h2>
+          <p>Puedes pedir orientación en cualquier momento. Si ya tienes un código, se incluirá automáticamente en el mensaje.</p>
+          <div class="dashboard-reference"><small>Tu código</small><strong data-application-code>Consultando…</strong></div>
+          <a class="btn" id="dashboardWhatsApp" href="https://wa.me/528714123563" target="_blank" rel="noopener">Abrir WhatsApp</a>
+        </div>
+        <div class="compact-qr">
+          <div id="dashboardWhatsAppQr" aria-label="QR para contactar por WhatsApp"></div>
+          <small>Escanea con tu teléfono</small>
+        </div>
+      </article>
+
+      <article class="dashboard-card">
+        <span class="status">Acceso personal</span>
+        <h2>Tu portal siempre disponible</h2>
+        <p>Aunque tu expediente esté incompleto, puedes volver a este panel, consultar tu avance y contactar al equipo. El menú privado se habilita al activar la membresía.</p>
+        <div class="dashboard-links">
+          <a href="../registro/">Revisar expediente →</a>
+          <a href="perfil/">Consultar perfil →</a>
+          <a href="ayuda/">Solicitar ayuda →</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="portal-footer">Jeazy Club · Seguimiento claro de tu solicitud</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js?v=2"></script>
+  <script src="../supabase-client.js?v=1"></script>
+  <script src="../payment-config.js?v=whatsapp-contact-1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="../portal.js?v=member-journey-3"></script>
+</body>
+</html>

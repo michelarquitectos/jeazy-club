@@ -22,7 +22,7 @@
     <a class="back" href="../">← Volver al sitio público</a>
     <p class="eyebrow">Registro de nuevo socio</p>
     <h1>Comienza tu camino<br><span>dentro del club.</span></h1>
-    <p class="intro">Crea tu acceso y completa en una sola página la documentación, la verificación de identidad y el contacto con Jeazy Club.</p>
+    <p class="intro">Crea tu acceso y completa en una sola página la documentación, la carga de identificación y el contacto con Jeazy Club.</p>
 
     <form class="form-card" id="registrationForm">
       <div class="form-step"><span>01</span><b>Datos personales y acceso</b></div>
@@ -110,22 +110,22 @@
     </section>
 
     <form class="form-card" id="identityForm" hidden>
-      <div class="form-step"><span>03</span><b>Verificación de identidad</b></div>
+      <div class="form-step"><span>03</span><b>Identificación para revisión</b></div>
       <p class="identity-welcome">Cuenta confirmada para <strong id="identityMemberName">nuevo socio</strong>.</p>
       <div class="fields" id="identityUploads">
         <label class="upload field full">
           <b>Fotografía de perfil</b>
-          <small>Una fotografía clara para identificar tu perfil dentro del club.</small>
+          <small>Una fotografía clara para identificar tu perfil dentro del club. JPG, PNG o WEBP, máximo 8 MB.</small>
           <input id="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
         </label>
         <label class="upload field">
           <b>INE · Frente</b>
-          <small>Imagen privada, visible únicamente para revisión autorizada.</small>
+          <small>Imagen privada para revisión documental. JPG, PNG o WEBP, máximo 8 MB.</small>
           <input type="file" accept="image/jpeg,image/png,image/webp" data-identity-file required>
         </label>
         <label class="upload field">
           <b>INE · Reverso</b>
-          <small>Imagen privada, visible únicamente para revisión autorizada.</small>
+          <small>Imagen privada para revisión documental. JPG, PNG o WEBP, máximo 8 MB.</small>
           <input type="file" accept="image/jpeg,image/png,image/webp" data-identity-file required>
         </label>
       </div>
@@ -153,6 +153,7 @@
             <button class="document-link" id="copyRegistrationCode" type="button">Copiar código</button>
           </div>
           <a class="btn" id="registrationWhatsApp" target="_blank" rel="noopener">Compartir mi código por WhatsApp</a>
+          <a class="btn secondary" href="../socios/">Ir a mi portal</a>
           <p class="form-message success">Tu solicitud queda pendiente de revisión. El código no activa automáticamente la membresía.</p>
         </div>
         <div class="registration-qr-panel">

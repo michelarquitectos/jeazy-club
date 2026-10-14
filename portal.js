@@ -9,6 +9,55 @@ let signed = false;
 let paid = false;
 let membershipUnlocked = false;
 const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const isDesignPreview = isLocalPreview && (
+  new URLSearchParams(window.location.search).has('preview') || document.body.hasAttribute('data-local-preview')
+);
+
+const memberAreaPath = window.location.pathname.includes('/socios/');
+const statusLabels = {
+  incomplete: 'Expediente incompleto', review: 'En revisión', payment: 'Aportación pendiente',
+  active: 'Membresía activa', rejected: 'Requiere atención', suspended: 'Membresía suspendida'
+};
+
+function getSitePrefix() {
+  const sociosPosition = window.location.pathname.indexOf('/socios/');
+  return sociosPosition >= 0 ? window.location.pathname.slice(0, sociosPosition) : '';
+}
+
+function buildWhatsAppUrl(code = '') {
+  const whatsappNumber = String(window.JEAZY_PAYMENT?.whatsappNumber || '528714123563').replace(/\D/g, '');
+  const reference = code ? ` Mi código de solicitud es: ${code}.` : '';
+  const message = `Hola, quiero recibir orientación de Jeazy Club.${reference} Deseo continuar con mi registro o membresía.`;
+  return whatsappNumber ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}` : '';
+}
+
+async function loadMemberJourney(user) {
+  const [profileResult, identityResult, acceptanceResult, applicationResult, membershipResult, paymentResult] = await Promise.all([
+    window.jeazySupabase.from('profiles').select('full_name,phone,city,state,profile_photo_path').eq('id', user.id).maybeSingle(),
+    window.jeazySupabase.from('identity_documents').select('document_side,review_status').eq('user_id', user.id),
+    window.jeazySupabase.from('legal_acceptances').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+    window.jeazySupabase.from('membership_applications').select('application_code,status').eq('user_id', user.id).maybeSingle(),
+    window.jeazySupabase.from('memberships').select('status').eq('user_id', user.id).maybeSingle(),
+    window.jeazySupabase.from('payment_verifications').select('status').eq('user_id', user.id).maybeSingle()
+  ]);
+  const profile = profileResult.data;
+  const identity = identityResult.data || [];
+  const application = applicationResult.data;
+  const membership = membershipResult.data;
+  const payment = paymentResult.data;
+  const hasProfile = Boolean(profile?.full_name && profile?.phone && profile?.city && profile?.state);
+  const hasPhoto = Boolean(profile?.profile_photo_path);
+  const hasIdentity = new Set(identity.map((item) => item.document_side)).size >= 2;
+  const hasLegal = (acceptanceResult.count || 0) >= 2;
+  const hasApplication = Boolean(application?.application_code);
+  const isActive = membership?.status === 'active' && payment?.status === 'confirmed';
+  let state = 'incomplete';
+  if (membership?.status === 'suspended') state = 'suspended';
+  else if (application?.status === 'rejected') state = 'rejected';
+  else if (isActive) state = 'active';
+  else if (hasApplication && hasIdentity && hasLegal) state = application?.status === 'approved' ? 'payment' : 'review';
+  return { user, profile, hasProfile, hasPhoto, hasIdentity, hasLegal, hasApplication, isActive, state, code: application?.application_code || '' };
+}
 
 function applyMembershipState() {
 document.querySelectorAll('[data-signed-only]').forEach((link) => {
@@ -40,6 +89,10 @@ async function initializeMembershipState() {
   if (window.jeazySupabase) {
     const { data: sessionData } = await window.jeazySupabase.auth.getSession();
     const user = sessionData.session?.user;
+    if (!user && memberAreaPath && !isDesignPreview) {
+      window.location.replace(`${getSitePrefix()}/acceso/`);
+      return;
+    }
     if (user) {
       const [acceptances, membership, payment, administrator] = await Promise.all([
         window.jeazySupabase.from('legal_acceptances').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
@@ -53,8 +106,7 @@ async function initializeMembershipState() {
         const navigation = document.querySelector('.portal-links') || document.querySelector('.portal-nav');
         if (navigation && !navigation.querySelector('[data-admin-link]')) {
           const adminLink = document.createElement('a');
-          const sociosPosition = window.location.pathname.indexOf('/socios/');
-          const sitePrefix = sociosPosition >= 0 ? window.location.pathname.slice(0, sociosPosition) : '';
+          const sitePrefix = getSitePrefix();
           adminLink.href = `${sitePrefix}/admin/`;
           adminLink.textContent = 'Administración';
           adminLink.className = 'admin-nav-link';
@@ -73,6 +125,82 @@ async function initializeMembershipState() {
 }
 
 initializeMembershipState();
+
+const memberDashboard = document.querySelector('#memberDashboard');
+if (memberDashboard && isDesignPreview) {
+  document.querySelectorAll('[data-member-name]').forEach((element) => { element.textContent = 'Socio de ejemplo'; });
+  document.querySelectorAll('[data-journey-status]').forEach((element) => { element.textContent = statusLabels.incomplete; });
+  document.querySelectorAll('[data-application-code]').forEach((element) => { element.textContent = 'Se genera al completar el expediente'; });
+  document.querySelector('[data-step="account"]')?.classList.add('done');
+  document.querySelectorAll('[data-step-label]').forEach((element) => { element.textContent = 'Pendiente'; });
+  const accountLabel = document.querySelector('[data-step="account"] [data-step-label]');
+  if (accountLabel) accountLabel.textContent = 'Completado';
+  const whatsappUrl = buildWhatsAppUrl();
+  const whatsappLink = document.querySelector('#dashboardWhatsApp');
+  if (whatsappLink) whatsappLink.href = whatsappUrl;
+  const qrContainer = document.querySelector('#dashboardWhatsAppQr');
+  if (qrContainer && window.QRCode) new window.QRCode(qrContainer, { text: whatsappUrl, width: 132, height: 132, colorDark: '#102018', colorLight: '#ffffff' });
+  memberDashboard.removeAttribute('aria-busy');
+} else if (memberDashboard && window.jeazySupabase) {
+  const renderMemberDashboard = async () => {
+    const { data: sessionData } = await window.jeazySupabase.auth.getSession();
+    const user = sessionData.session?.user;
+    if (!user) return;
+    const journey = await loadMemberJourney(user);
+    const displayName = journey.profile?.full_name || user.user_metadata?.full_name || 'Socio';
+    document.querySelectorAll('[data-member-name]').forEach((element) => { element.textContent = displayName; });
+    document.querySelectorAll('[data-journey-status]').forEach((element) => { element.textContent = statusLabels[journey.state]; });
+    document.querySelectorAll('[data-application-code]').forEach((element) => { element.textContent = journey.code || 'Se genera al completar el expediente'; });
+    const stepStates = { account: true, documents: journey.hasLegal, identity: journey.hasIdentity && journey.hasPhoto, contact: journey.hasApplication, active: journey.isActive };
+    Object.entries(stepStates).forEach(([key, complete]) => {
+      document.querySelectorAll(`[data-step="${key}"]`).forEach((element) => {
+        element.classList.toggle('done', complete);
+        const label = element.querySelector('[data-step-label]');
+        if (label) label.textContent = complete ? 'Completado' : 'Pendiente';
+      });
+    });
+    const primaryAction = document.querySelector('#journeyPrimaryAction');
+    const primaryText = document.querySelector('#journeyPrimaryText');
+    if (journey.state === 'rejected') {
+      primaryAction.href = '../registro/'; primaryAction.textContent = 'Corregir mi expediente';
+      primaryText.textContent = 'El equipo solicitó corregir tu documentación. Vuelve a cargar los archivos y envía nuevamente tu solicitud.';
+    } else if (journey.state === 'suspended') {
+      primaryAction.href = 'ayuda/'; primaryAction.textContent = 'Contactar al equipo';
+      primaryText.textContent = 'Tu membresía requiere atención del equipo. Comunícate antes de intentar otro cambio.';
+    } else if (journey.isActive) {
+      primaryAction.href = 'menu/'; primaryAction.textContent = 'Entrar al menú de socios';
+      primaryText.textContent = 'Tu membresía está activa. Ya puedes consultar el contenido reservado para socios.';
+    } else if (!journey.hasProfile || !journey.hasApplication || !journey.hasIdentity || !journey.hasLegal || !journey.hasPhoto) {
+      primaryAction.href = '../registro/'; primaryAction.textContent = 'Continuar mi expediente';
+      primaryText.textContent = 'Completa los documentos, tu fotografía de perfil y ambos lados de tu identificación.';
+    } else {
+      primaryAction.href = 'pago/'; primaryAction.textContent = 'Ver mi código y contacto';
+      primaryText.textContent = 'Tu expediente fue recibido. Comparte tu código por WhatsApp para continuar con el equipo.';
+    }
+    const whatsappUrl = buildWhatsAppUrl(journey.code);
+    const whatsappLink = document.querySelector('#dashboardWhatsApp');
+    if (whatsappLink && whatsappUrl) whatsappLink.href = whatsappUrl;
+    const qrContainer = document.querySelector('#dashboardWhatsAppQr');
+    if (qrContainer && whatsappUrl && window.QRCode) {
+      qrContainer.innerHTML = '';
+      new window.QRCode(qrContainer, { text: whatsappUrl, width: 132, height: 132, colorDark: '#102018', colorLight: '#ffffff' });
+    }
+    memberDashboard.removeAttribute('aria-busy');
+  };
+  renderMemberDashboard().catch(() => {
+    const primaryText = document.querySelector('#journeyPrimaryText');
+    if (primaryText) primaryText.textContent = 'No fue posible consultar tu avance. Recarga la página o contacta al equipo por WhatsApp.';
+    memberDashboard.removeAttribute('aria-busy');
+  });
+}
+
+document.querySelectorAll('[data-logout]').forEach((button) => {
+  button.addEventListener('click', async () => {
+    if (window.jeazySupabase) await window.jeazySupabase.auth.signOut();
+    sessionStorage.removeItem('jeazy-session-active');
+    window.location.href = `${getSitePrefix()}/acceso/`;
+  });
+});
 
 const registration = document.querySelector('#registrationForm');
 if (registration) {
@@ -96,6 +224,14 @@ if (registration) {
   const setMessage = (element, text, type = '') => {
     element.textContent = text;
     element.className = `form-message ${type}`.trim();
+  };
+
+  const validateImage = (file, label) => {
+    const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+    if (!file) return `${label}: selecciona una imagen.`;
+    if (!allowedTypes.has(file.type)) return `${label}: utiliza un archivo JPG, PNG o WEBP.`;
+    if (file.size > 8 * 1024 * 1024) return `${label}: la imagen no debe superar 8 MB.`;
+    return '';
   };
 
   const showCompletionStep = (user, applicationCode) => {
@@ -204,12 +340,24 @@ if (registration) {
     }
     if (data.session?.user) {
       const user = data.session.user;
-      const [applicationResult, acceptancesResult] = await Promise.all([
-        window.jeazySupabase.from('membership_applications').select('application_code').eq('user_id', user.id).maybeSingle(),
-        window.jeazySupabase.from('legal_acceptances').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      const [applicationResult, acceptancesResult, profileResult, identityResult] = await Promise.all([
+        window.jeazySupabase.from('membership_applications').select('application_code,status').eq('user_id', user.id).maybeSingle(),
+        window.jeazySupabase.from('legal_acceptances').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+        window.jeazySupabase.from('profiles').select('profile_photo_path').eq('id', user.id).maybeSingle(),
+        window.jeazySupabase.from('identity_documents').select('document_side').eq('user_id', user.id)
       ]);
-      if (applicationResult.data?.application_code && (acceptancesResult.count || 0) >= 2) {
+      const acceptedDocuments = (acceptancesResult.count || 0) >= 2;
+      const hasPhoto = Boolean(profileResult.data?.profile_photo_path);
+      const hasBothIdentitySides = new Set((identityResult.data || []).map((item) => item.document_side)).size >= 2;
+      if (applicationResult.data?.application_code && applicationResult.data.status !== 'rejected' && acceptedDocuments && hasPhoto && hasBothIdentitySides) {
         showCompletionStep(user, applicationResult.data.application_code);
+      } else if (applicationResult.data?.status === 'rejected' || (acceptedDocuments && (!hasPhoto || !hasBothIdentitySides))) {
+        showIdentityStep(user);
+        if (applicationResult.data?.status === 'rejected') {
+          setMessage(identityMessage, 'El equipo solicitó corregir tus documentos. Carga nuevamente las imágenes y reenvía tu solicitud.', 'error');
+        } else {
+          setMessage(identityMessage, 'Continúa con las imágenes pendientes para completar tu expediente.');
+        }
       } else {
         showDocumentStep(user);
       }
@@ -283,6 +431,27 @@ if (registration) {
     const metadata = activeUser.user_metadata || {};
     const fullName = metadata.full_name || 'Socio';
     const reviewMode = normalizeName(fullName) === reviewerName;
+    const profilePhoto = document.querySelector('#profilePhoto')?.files[0];
+    const filesToValidate = [{ file: profilePhoto, label: 'Fotografía de perfil' }];
+    if (!reviewMode) {
+      filesToValidate.push(
+        { file: identityFiles[0]?.files[0], label: 'INE frente' },
+        { file: identityFiles[1]?.files[0], label: 'INE reverso' }
+      );
+    }
+    const imageError = filesToValidate.map(({ file, label }) => validateImage(file, label)).find(Boolean);
+    if (imageError) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Enviar solicitud y generar código';
+      setMessage(identityMessage, imageError, 'error');
+      return;
+    }
+    const [existingProfileResult, existingDocumentsResult] = await Promise.all([
+      window.jeazySupabase.from('profiles').select('profile_photo_path').eq('id', activeUser.id).maybeSingle(),
+      window.jeazySupabase.from('identity_documents').select('document_side,storage_path').eq('user_id', activeUser.id)
+    ]);
+    const previousPhotoPath = existingProfileResult.data?.profile_photo_path || '';
+    const previousDocumentPaths = new Map((existingDocumentsResult.data || []).map((item) => [item.document_side, item.storage_path]));
 
     const { error: profileError } = await window.jeazySupabase
       .from('profiles')
@@ -304,7 +473,6 @@ if (registration) {
       return;
     }
 
-    const profilePhoto = document.querySelector('#profilePhoto')?.files[0];
     if (profilePhoto) {
       const photoExtension = profilePhoto.name.split('.').pop().toLowerCase();
       const photoPath = `${activeUser.id}/profile-${Date.now()}.${photoExtension}`;
@@ -329,6 +497,9 @@ if (registration) {
         submitButton.textContent = 'Terminar registro';
         setMessage(identityMessage, `No se pudo vincular la fotografía al perfil: ${photoProfileError.message}`, 'error');
         return;
+      }
+      if (previousPhotoPath && previousPhotoPath !== photoPath) {
+        await window.jeazySupabase.storage.from('profile-photos').remove([previousPhotoPath]);
       }
     }
 
@@ -358,15 +529,23 @@ if (registration) {
         });
       }
 
-      const { error: documentsError } = await window.jeazySupabase
-        .from('identity_documents')
-        .upsert(documentRows, { onConflict: 'user_id,document_side' });
-
-      if (documentsError) {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Terminar registro';
-        setMessage(identityMessage, `No se pudo registrar la identificación: ${documentsError.message}`, 'error');
-        return;
+      for (const documentRow of documentRows) {
+        const { error: documentError } = await window.jeazySupabase.rpc('submit_identity_document', {
+          p_document_side: documentRow.document_side,
+          p_storage_path: documentRow.storage_path
+        });
+        if (documentError) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Terminar registro';
+          setMessage(identityMessage, `No se pudo registrar la identificación: ${documentError.message}`, 'error');
+          return;
+        }
+      }
+      const replacedDocumentPaths = documentRows
+        .map((documentRow) => previousDocumentPaths.get(documentRow.document_side))
+        .filter(Boolean);
+      if (replacedDocumentPaths.length) {
+        await window.jeazySupabase.storage.from('identity-documents').remove(replacedDocumentPaths);
       }
     }
 
@@ -403,10 +582,7 @@ if (registration) {
     }
 
     const { data: applicationData, error: applicationError } = await window.jeazySupabase
-      .from('membership_applications')
-      .upsert({ user_id: activeUser.id, status: 'submitted' }, { onConflict: 'user_id' })
-      .select('application_code')
-      .single();
+      .rpc('submit_membership_application');
 
     if (applicationError) {
       submitButton.disabled = false;
@@ -419,7 +595,14 @@ if (registration) {
     localStorage.setItem('jeazy-identity-submitted', 'yes');
     localStorage.setItem('jeazy-document-signed', 'yes');
     sessionStorage.setItem('jeazy-session-active', 'yes');
-    showCompletionStep(activeUser, applicationData.application_code);
+    const applicationCode = Array.isArray(applicationData) ? applicationData[0]?.application_code : applicationData?.application_code;
+    if (!applicationCode) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Enviar solicitud y generar código';
+      setMessage(identityMessage, 'La solicitud fue guardada, pero no fue posible recuperar el código. Recarga la página.', 'error');
+      return;
+    }
+    showCompletionStep(activeUser, applicationCode);
   });
 
   initializeRegistration();

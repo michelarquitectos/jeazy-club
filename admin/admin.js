@@ -55,7 +55,7 @@ function renderMembers(rows) {
         ${profile.profile_photo_path ? `<button class="document-link" type="button" data-photo-path="${escapeHtml(profile.profile_photo_path)}">Ver foto de perfil</button>` : ''}
       </div>
       <div class="admin-actions">
-        <button class="btn" type="button" data-review="approved">Aprobar identidad</button>
+        <button class="btn" type="button" data-review="approved">Aceptar documentos</button>
         <button class="btn secondary" type="button" data-review="rejected">Rechazar</button>
         <button class="btn secondary" type="button" data-copy-reference="${escapeHtml(application?.application_code || '')}" ${application?.application_code ? '' : 'disabled'}>Copiar referencia</button>
         <button class="btn secondary" type="button" data-payment="confirmed" ${application?.status === 'approved' && documents.filter((document) => document.review_status === 'approved').length === 2 && signatures >= 2 ? '' : 'disabled'}>Confirmar aportación o pago</button>
