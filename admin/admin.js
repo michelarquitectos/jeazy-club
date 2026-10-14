@@ -58,7 +58,7 @@ function renderMembers(rows) {
         <button class="btn" type="button" data-review="approved">Aprobar identidad</button>
         <button class="btn secondary" type="button" data-review="rejected">Rechazar</button>
         <button class="btn secondary" type="button" data-copy-reference="${escapeHtml(application?.application_code || '')}" ${application?.application_code ? '' : 'disabled'}>Copiar referencia</button>
-        <button class="btn secondary" type="button" data-payment="confirmed" ${application?.status === 'approved' && documents.filter((document) => document.review_status === 'approved').length === 2 && signatures >= 2 ? '' : 'disabled'}>Confirmar transferencia</button>
+        <button class="btn secondary" type="button" data-payment="confirmed" ${application?.status === 'approved' && documents.filter((document) => document.review_status === 'approved').length === 2 && signatures >= 2 ? '' : 'disabled'}>Confirmar aportación o pago</button>
         <button class="btn secondary" type="button" data-membership="suspended">Suspender</button>
       </div>
     </article>`).join('');

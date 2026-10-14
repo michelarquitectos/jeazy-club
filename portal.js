@@ -87,6 +87,7 @@ if (registration) {
   const identityMessage = document.querySelector('#identityMessage');
   const identityFiles = identityForm.querySelectorAll('[data-identity-file]');
   const reviewModeNotice = identityForm.querySelector('#reviewModeNotice');
+  const registrationComplete = document.querySelector('#registrationComplete');
   let activeUser = null;
   const downloadedDocuments = new Set();
 
@@ -95,6 +96,38 @@ if (registration) {
   const setMessage = (element, text, type = '') => {
     element.textContent = text;
     element.className = `form-message ${type}`.trim();
+  };
+
+  const showCompletionStep = (user, applicationCode) => {
+    const whatsappNumber = String(window.JEAZY_PAYMENT?.whatsappNumber || '').replace(/\D/g, '');
+    const message = `Hola, terminé mi registro en Jeazy Club. Mi código de solicitud es: ${applicationCode}. Deseo vincular este número de WhatsApp con mi solicitud.`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    const codeElement = document.querySelector('#registrationApplicationCode');
+    const whatsappLink = document.querySelector('#registrationWhatsApp');
+    const copyButton = document.querySelector('#copyRegistrationCode');
+    const qrContainer = document.querySelector('#registrationWhatsAppQr');
+
+    activeUser = user;
+    registration.hidden = true;
+    emailConfirmation.hidden = true;
+    registrationDocuments.hidden = true;
+    identityForm.hidden = true;
+    registrationComplete.hidden = false;
+    codeElement.textContent = applicationCode;
+    whatsappLink.href = whatsappUrl;
+    copyButton.onclick = async () => {
+      await navigator.clipboard.writeText(applicationCode);
+      copyButton.textContent = 'Código copiado';
+      setTimeout(() => { copyButton.textContent = 'Copiar código'; }, 1600);
+    };
+
+    qrContainer.innerHTML = '';
+    if (window.QRCode) {
+      new window.QRCode(qrContainer, { text: whatsappUrl, width: 180, height: 180, colorDark: '#102018', colorLight: '#ffffff' });
+    } else {
+      qrContainer.textContent = 'Utiliza el botón para abrir WhatsApp.';
+    }
+    registrationComplete.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const showIdentityStep = (user) => {
@@ -114,7 +147,7 @@ if (registration) {
     });
   };
 
-  const documentStorageKey = (user) => `jeazy-registration-documents:${user.id}`;
+  const documentStorageKey = (user) => `jeazy-registration-documents-v2:${user.id}`;
 
   const updateDocumentStep = () => {
     registrationDocumentLinks.forEach((link) => {
@@ -170,7 +203,16 @@ if (registration) {
       return;
     }
     if (data.session?.user) {
-      showDocumentStep(data.session.user);
+      const user = data.session.user;
+      const [applicationResult, acceptancesResult] = await Promise.all([
+        window.jeazySupabase.from('membership_applications').select('application_code').eq('user_id', user.id).maybeSingle(),
+        window.jeazySupabase.from('legal_acceptances').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      ]);
+      if (applicationResult.data?.application_code && (acceptancesResult.count || 0) >= 2) {
+        showCompletionStep(user, applicationResult.data.application_code);
+      } else {
+        showDocumentStep(user);
+      }
     }
   };
 
@@ -328,21 +370,56 @@ if (registration) {
       }
     }
 
-    const { error: applicationError } = await window.jeazySupabase
+    const signerName = document.querySelector('#registrationSignature').value.trim();
+    const { data: legalDocuments, error: legalDocumentsError } = await window.jeazySupabase
+      .from('legal_documents')
+      .select('id')
+      .eq('is_active', true);
+
+    if (legalDocumentsError || !legalDocuments?.length) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Enviar solicitud y generar código';
+      setMessage(identityMessage, 'No fue posible consultar los documentos vigentes.', 'error');
+      return;
+    }
+
+    const { data: existingAcceptances } = await window.jeazySupabase
+      .from('legal_acceptances')
+      .select('legal_document_id')
+      .eq('user_id', activeUser.id);
+    const acceptedIds = new Set((existingAcceptances || []).map((item) => item.legal_document_id));
+    const acceptanceRows = legalDocuments
+      .filter((document) => !acceptedIds.has(document.id))
+      .map((document) => ({ user_id: activeUser.id, legal_document_id: document.id, signer_name: signerName }));
+    const { error: acceptanceError } = acceptanceRows.length
+      ? await window.jeazySupabase.from('legal_acceptances').insert(acceptanceRows)
+      : { error: null };
+
+    if (acceptanceError) {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Enviar solicitud y generar código';
+      setMessage(identityMessage, `No se pudo registrar la aceptación: ${acceptanceError.message}`, 'error');
+      return;
+    }
+
+    const { data: applicationData, error: applicationError } = await window.jeazySupabase
       .from('membership_applications')
-      .upsert({ user_id: activeUser.id, status: 'submitted' }, { onConflict: 'user_id' });
+      .upsert({ user_id: activeUser.id, status: 'submitted' }, { onConflict: 'user_id' })
+      .select('application_code')
+      .single();
 
     if (applicationError) {
       submitButton.disabled = false;
-      submitButton.textContent = 'Terminar registro';
+      submitButton.textContent = 'Enviar solicitud y generar código';
       setMessage(identityMessage, `No se pudo completar la solicitud: ${applicationError.message}`, 'error');
       return;
     }
 
     localStorage.setItem('jeazy-registered', 'yes');
     localStorage.setItem('jeazy-identity-submitted', 'yes');
+    localStorage.setItem('jeazy-document-signed', 'yes');
     sessionStorage.setItem('jeazy-session-active', 'yes');
-    window.location.href = '../socios/documento/';
+    showCompletionStep(activeUser, applicationData.application_code);
   });
 
   initializeRegistration();
@@ -652,7 +729,7 @@ if (applicationCodeElement) {
     }
 
     if (digitsOnly) {
-      const whatsappText = `Hola, quiero continuar con mi solicitud de Jeazy Club. Mi código de solicitud es: ${code}. Quisiera recibir información para realizar mi aportación o consultar el pago de productos.`;
+      const whatsappText = `Hola, terminé mi registro en Jeazy Club. Mi código de solicitud es: ${code}. Deseo vincular este número de WhatsApp con mi solicitud.`;
       whatsappButton.href = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(whatsappText)}`;
       whatsappButton.target = '_blank';
       whatsappButton.rel = 'noopener';

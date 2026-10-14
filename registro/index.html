@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../portal.css?v=registration-documents-1">
+  <link rel="stylesheet" href="../portal.css?v=unified-registration-1">
 </head>
 <body>
   <header class="portal-header">
@@ -22,7 +22,7 @@
     <a class="back" href="../">← Volver al sitio público</a>
     <p class="eyebrow">Registro de nuevo socio</p>
     <h1>Comienza tu camino<br><span>dentro del club.</span></h1>
-    <p class="intro">Crea tu acceso, confirma tu correo, descarga la documentación y completa la verificación de identidad.</p>
+    <p class="intro">Crea tu acceso y completa en una sola página la documentación, la verificación de identidad y el contacto con Jeazy Club.</p>
 
     <form class="form-card" id="registrationForm">
       <div class="form-step"><span>01</span><b>Datos personales y acceso</b></div>
@@ -79,9 +79,33 @@
             </div>
           </div>
         </article>
+
+        <article class="document legal-document">
+          <span class="pdf" aria-hidden="true">PDF</span>
+          <div>
+            <h3>Paquete de documentos para asociados</h3>
+            <p>Solicitud, documentación y condiciones aplicables a la membresía.</p>
+            <div class="document-actions">
+              <a class="btn registration-download" href="../assets/documentos/Jeazy_Club_Paquete_Documentos_Asociados.pdf" download data-registration-document="membership">Descargar PDF</a>
+              <span class="download-state" data-download-state="membership">Pendiente</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="document legal-document">
+          <span class="pdf" aria-hidden="true">PDF</span>
+          <div>
+            <h3>Acuerdo de confidencialidad</h3>
+            <p>Obligaciones de confidencialidad y condiciones para integrantes del club.</p>
+            <div class="document-actions">
+              <a class="btn registration-download" href="../assets/documentos/NDA_Jeazy_Private_Final.pdf" download data-registration-document="nda">Descargar PDF</a>
+              <span class="download-state" data-download-state="nda">Pendiente</span>
+            </div>
+          </div>
+        </article>
       </div>
 
-      <p class="form-message" id="documentDownloadMessage" role="status" aria-live="polite">Descarga los dos documentos para continuar.</p>
+      <p class="form-message" id="documentDownloadMessage" role="status" aria-live="polite">Descarga los documentos para continuar.</p>
       <button class="btn" id="continueToIdentity" type="button" disabled>Continuar con identificación</button>
     </section>
 
@@ -90,9 +114,9 @@
       <p class="identity-welcome">Cuenta confirmada para <strong id="identityMemberName">nuevo socio</strong>.</p>
       <div class="fields" id="identityUploads">
         <label class="upload field full">
-          <b>Fotografía de perfil · Opcional</b>
+          <b>Fotografía de perfil</b>
           <small>Una fotografía clara para identificar tu perfil dentro del club.</small>
-          <input id="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp">
+          <input id="profilePhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
         </label>
         <label class="upload field">
           <b>INE · Frente</b>
@@ -107,15 +131,45 @@
       </div>
       <div class="notice" id="reviewModeNotice" hidden>Modo de revisión activado. Para este perfil de prueba no es necesario cargar imágenes del INE.</div>
       <label class="check"><input type="checkbox" required> Confirmo que los archivos corresponden a mi identificación y autorizo su revisión para validar mi solicitud.</label>
+      <div class="field full registration-signature">
+        <label for="registrationSignature">Firma digital · Nombre completo</label>
+        <input id="registrationSignature" required autocomplete="name">
+        <small>Escribe tu nombre completo tal como aparece en tu identificación.</small>
+      </div>
+      <label class="check"><input id="registrationLegalConsent" type="checkbox" required> Confirmo que descargué, leí y acepto los documentos mostrados en esta solicitud.</label>
       <p class="form-message" id="identityMessage" role="status" aria-live="polite"></p>
-      <button class="btn" type="submit">Terminar registro</button>
+      <button class="btn" type="submit">Enviar solicitud y generar código</button>
     </form>
+
+    <section class="form-card registration-complete" id="registrationComplete" hidden>
+      <span class="status">Solicitud recibida</span>
+      <div class="form-step"><span>04</span><b>Contacto con Jeazy Club</b></div>
+      <h2>Tu código está listo.</h2>
+      <p>Compártelo por WhatsApp para vincular esta conversación con tu expediente y recibir las instrucciones correspondientes.</p>
+      <div class="registration-contact-grid">
+        <div>
+          <div class="application-reference">
+            <div><small>Tu código único</small><strong id="registrationApplicationCode">Consultando…</strong></div>
+            <button class="document-link" id="copyRegistrationCode" type="button">Copiar código</button>
+          </div>
+          <a class="btn" id="registrationWhatsApp" target="_blank" rel="noopener">Compartir mi código por WhatsApp</a>
+          <p class="form-message success">Tu solicitud queda pendiente de revisión. El código no activa automáticamente la membresía.</p>
+        </div>
+        <div class="registration-qr-panel">
+          <div id="registrationWhatsAppQr" aria-label="Código QR para abrir WhatsApp"></div>
+          <strong>Escanea para abrir WhatsApp</strong>
+          <small>El mensaje incluirá tu código de solicitud.</small>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="portal-footer">Jeazy Club · Tus documentos se almacenan de forma privada</footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../supabase-config.js?v=2"></script>
   <script src="../supabase-client.js?v=1"></script>
-  <script src="../portal.js?v=registration-documents-1"></script>
+  <script src="../payment-config.js?v=whatsapp-contact-1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="../portal.js?v=unified-registration-1"></script>
 </body>
 </html>
