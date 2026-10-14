@@ -5,6 +5,6 @@ window.JEAZY_PAYMENT = Object.freeze({
   bankName: '',
   accountHolder: '',
   clabe: '',
-  whatsappNumber: '',
+  whatsappNumber: '528714123563',
   paymentWindowDays: 15
 });

@@ -596,9 +596,12 @@ if (applicationCodeElement) {
   const digitsOnly = String(paymentConfig.whatsappNumber || '').replace(/\D/g, '');
 
   fee.textContent = paymentConfig.feeLabel || 'Cuota por definir';
-  document.querySelector('#paymentBank').textContent = paymentConfig.bankName || 'Pendiente de recibir';
-  document.querySelector('#paymentHolder').textContent = paymentConfig.accountHolder || 'Pendiente de recibir';
-  document.querySelector('#paymentClabe').textContent = paymentConfig.clabe || 'Pendiente de recibir';
+  const paymentBank = document.querySelector('#paymentBank');
+  const paymentHolder = document.querySelector('#paymentHolder');
+  const paymentClabe = document.querySelector('#paymentClabe');
+  if (paymentBank) paymentBank.textContent = paymentConfig.bankName || 'Pendiente de recibir';
+  if (paymentHolder) paymentHolder.textContent = paymentConfig.accountHolder || 'Pendiente de recibir';
+  if (paymentClabe) paymentClabe.textContent = paymentConfig.clabe || 'Pendiente de recibir';
 
   const setPaymentStatus = (text, type = '') => {
     statusMessage.textContent = text;
@@ -644,20 +647,20 @@ if (applicationCodeElement) {
       whatsappButton.href = '../menu/';
       whatsappButton.classList.remove('disabled');
       whatsappButton.setAttribute('aria-disabled', 'false');
-      setPaymentStatus('Tu transferencia fue confirmada y tu membresía está activa.', 'success');
+      setPaymentStatus('Tu aportación fue confirmada y tu membresía está activa.', 'success');
       return;
     }
 
     if (digitsOnly) {
-      const whatsappText = `Hola, envío mi comprobante de aportación de Jeazy Club. Código de solicitud: ${code}.`;
+      const whatsappText = `Hola, quiero continuar con mi solicitud de Jeazy Club. Mi código de solicitud es: ${code}. Quisiera recibir información para realizar mi aportación o consultar el pago de productos.`;
       whatsappButton.href = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(whatsappText)}`;
       whatsappButton.target = '_blank';
       whatsappButton.rel = 'noopener';
       whatsappButton.classList.remove('disabled');
       whatsappButton.setAttribute('aria-disabled', 'false');
-      setPaymentStatus('Tu solicitud está pendiente. Envía el comprobante y conserva tu código de referencia.');
+      setPaymentStatus('Tu solicitud está pendiente. Contacta al equipo de Jeazy Club y conserva tu código de referencia.');
     } else {
-      setPaymentStatus('Jeazy Club confirmará próximamente los datos bancarios y el WhatsApp oficial. Tu solicitud permanece guardada.');
+      setPaymentStatus('Jeazy Club confirmará próximamente el WhatsApp oficial. Tu solicitud permanece guardada.');
     }
   };
 
