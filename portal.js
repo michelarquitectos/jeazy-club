@@ -15,7 +15,7 @@ const isDesignPreview = isLocalPreview && (
 
 const memberAreaPath = window.location.pathname.includes('/socios/');
 const statusLabels = {
-  incomplete: 'Expediente incompleto', review: 'En revisión', payment: 'Aportación pendiente',
+  incomplete: 'Expediente incompleto', review: 'En revisión', payment: 'Contacto pendiente',
   active: 'Membresía activa', rejected: 'Requiere atención', suspended: 'Membresía suspendida'
 };
 
@@ -779,13 +779,12 @@ loadSupabaseProfile();
 const applicationCodeElement = document.querySelector('#applicationCode');
 if (applicationCodeElement) {
   const paymentConfig = window.JEAZY_PAYMENT || {};
-  const fee = document.querySelector('#paymentFee');
   const statusMessage = document.querySelector('#paymentStatusMessage');
   const whatsappButton = document.querySelector('#sendReceiptWhatsApp');
+  const activeMemberMenu = document.querySelector('#activeMemberMenu');
   const copyButton = document.querySelector('#copyApplicationCode');
   const digitsOnly = String(paymentConfig.whatsappNumber || '').replace(/\D/g, '');
 
-  fee.textContent = paymentConfig.feeLabel || 'Cuota por definir';
   const paymentBank = document.querySelector('#paymentBank');
   const paymentHolder = document.querySelector('#paymentHolder');
   const paymentClabe = document.querySelector('#paymentClabe');
@@ -832,15 +831,6 @@ if (applicationCodeElement) {
       setTimeout(() => { copyButton.textContent = 'Copiar código'; }, 1600);
     });
 
-    if (paymentResult.data?.status === 'confirmed' && membershipResult.data?.status === 'active') {
-      whatsappButton.textContent = 'Entrar al menú de socios';
-      whatsappButton.href = '../menu/';
-      whatsappButton.classList.remove('disabled');
-      whatsappButton.setAttribute('aria-disabled', 'false');
-      setPaymentStatus('Tu aportación fue confirmada y tu membresía está activa.', 'success');
-      return;
-    }
-
     if (digitsOnly) {
       const whatsappText = `Hola, terminé mi registro en Jeazy Club. Mi código de solicitud es: ${code}. Deseo vincular este número de WhatsApp con mi solicitud.`;
       whatsappButton.href = `https://wa.me/${digitsOnly}?text=${encodeURIComponent(whatsappText)}`;
@@ -848,9 +838,13 @@ if (applicationCodeElement) {
       whatsappButton.rel = 'noopener';
       whatsappButton.classList.remove('disabled');
       whatsappButton.setAttribute('aria-disabled', 'false');
-      setPaymentStatus('Tu solicitud está pendiente. Contacta al equipo de Jeazy Club y conserva tu código de referencia.');
+      setPaymentStatus('Tu código está listo. Abre WhatsApp para compartirlo directamente con el equipo.');
     } else {
-      setPaymentStatus('Jeazy Club confirmará próximamente el WhatsApp oficial. Tu solicitud permanece guardada.');
+      setPaymentStatus('El contacto directo no está disponible por el momento. Tu solicitud permanece guardada.');
+    }
+    if (paymentResult.data?.status === 'confirmed' && membershipResult.data?.status === 'active' && activeMemberMenu) {
+      activeMemberMenu.hidden = false;
+      setPaymentStatus('Tu código permanece disponible y tu membresía está activa.', 'success');
     }
   };
 

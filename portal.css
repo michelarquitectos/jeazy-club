@@ -15,6 +15,7 @@
 
 /* Paso de pago de membresía */
 .payment-shell{max-width:1000px}.payment-card{display:grid;grid-template-columns:.72fr 1.28fr;gap:0;margin-top:42px;border:1px solid var(--line);border-radius:24px;background:rgba(251,252,245,.92);box-shadow:0 24px 70px rgba(53,67,39,.08);overflow:hidden}.payment-summary{display:flex;flex-direction:column;justify-content:center;padding:42px;background:linear-gradient(145deg,#e1edc9,#f0f4df)}.payment-summary>p{margin:25px 0 6px;color:var(--muted);font-size:12px}.payment-summary>strong{font-size:clamp(28px,4vw,46px);line-height:1.08;letter-spacing:-.04em}.payment-copy{padding:42px}.payment-copy h2{margin:0 0 12px;font-size:clamp(25px,3vw,36px);letter-spacing:-.035em}.payment-copy>p{color:var(--muted);font-size:13px}.payment-copy .check{margin:25px 0}.payment-copy .form-message{margin-top:14px!important}
+.payment-card-single{display:block;max-width:720px;margin-right:auto}.payment-card-single .payment-copy{padding:clamp(28px,5vw,52px)}
 
 @media(max-width:760px){.payment-card{grid-template-columns:1fr}.payment-summary,.payment-copy{padding:28px 22px}}
 

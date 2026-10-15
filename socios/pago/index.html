@@ -3,66 +3,55 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Aportación o cuota | Jeazy Club</title>
+  <title>Información para nuevos miembros | Jeazy Club</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../portal.css?v=whatsapp-contact-1">
+  <link rel="stylesheet" href="../../portal.css?v=nuevos-miembros-1">
 </head>
 <body>
   <header class="portal-header">
     <nav class="portal-nav">
       <a class="portal-logo" href="../../"><img src="../../assets/jeazy-club-logo.png" alt="Jeazy Club"></a>
-      <span class="portal-label">Activación de membresía</span>
+      <span class="portal-label">Nuevos miembros</span>
     </nav>
   </header>
 
   <main class="shell payment-shell">
     <a class="back" href="../">← Volver a mi portal</a>
-    <p class="eyebrow">Último paso</p>
-    <h1>Aportación<br><span>o cuota.</span></h1>
-    <p class="intro">Tu firma fue registrada. Para completar el alta será necesario cubrir la aportación o cuota de membresía.</p>
+    <p class="eyebrow">Contacto directo</p>
+    <h1>Información para<br><span>nuevos miembros.</span></h1>
+    <p class="intro">Tu solicitud quedó registrada. Conserva tu código y compártelo con el equipo de Jeazy Club por WhatsApp para continuar.</p>
 
-    <section class="payment-card">
-      <div class="payment-summary">
-        <span class="status">Información pendiente</span>
-        <p>Aportación, membresía o compra</p>
-        <div class="price-breakdown">
-          <div><span>Concepto</span><strong>Por confirmar</strong></div>
-          <div><span>Canal de seguimiento</span><strong>WhatsApp</strong></div>
-        </div>
-        <small>Importe</small>
-        <strong id="paymentFee">Sin importe publicado</strong>
-      </div>
-
+    <section class="payment-card payment-card-single">
       <div class="payment-copy">
-        <p class="preview-label">Atención directa por WhatsApp</p>
-        <h2>Continúa con el equipo de Jeazy Club</h2>
-        <p>Comparte tu código de solicitud por WhatsApp. El equipo te informará directamente el concepto, importe y opciones disponibles antes de solicitar cualquier aportación o pago.</p>
+        <h2>Continúa por WhatsApp</h2>
+        <p>Comparte tu código de solicitud con el equipo. El mensaje se prepara automáticamente para que puedan identificar tu registro.</p>
         <div class="payment-steps">
           <div><span>01</span><p>Contacta al equipo por WhatsApp.</p></div>
-          <div><span>02</span><p>Comparte tu código y recibe las instrucciones correspondientes.</p></div>
-          <div><span>03</span><p>Revisa la información recibida y espera la confirmación del equipo.</p></div>
+          <div><span>02</span><p>Envía el mensaje que incluye tu código personal.</p></div>
+          <div><span>03</span><p>Recibe orientación directamente del equipo.</p></div>
         </div>
         <section class="payment-method transfer-method">
-          <div class="method-heading"><span>✓</span><div><h3>Contacto con la empresa</h3><p>La empresa te proporcionará directamente las opciones e instrucciones de pago.</p></div></div>
+          <div class="method-heading"><span>✓</span><div><h3>Contacto con Jeazy Club</h3><p>Utiliza el botón para abrir una conversación nueva con el equipo.</p></div></div>
           <div class="application-reference">
             <div><small>Tu código de solicitud</small><strong id="applicationCode">Consultando…</strong></div>
             <button class="document-link" id="copyApplicationCode" type="button">Copiar código</button>
           </div>
-          <a class="btn disabled" id="sendReceiptWhatsApp" aria-disabled="true">Compartir mi código por WhatsApp</a>
+          <a class="btn disabled" id="sendReceiptWhatsApp" target="_blank" rel="noopener" aria-disabled="true">Abrir WhatsApp y compartir mi código</a>
+          <a class="document-link" id="activeMemberMenu" href="../menu/" hidden>Entrar al menú de socios</a>
           <p class="form-message" id="paymentStatusMessage" aria-live="polite">Consultando el estado de tu solicitud…</p>
         </section>
-        <div class="payment-notice"><strong>Importante</strong><p>El código identifica tu expediente; no funciona como contraseña ni demuestra que el pago fue realizado. La membresía se activa únicamente después de que el equipo confirme la aportación.</p></div>
+        <div class="payment-notice"><strong>Importante</strong><p>El código identifica tu solicitud y permite que el equipo encuentre tu registro. No funciona como contraseña.</p></div>
       </div>
     </section>
   </main>
 
-  <footer class="portal-footer">Jeazy Club · Atención y pagos coordinados directamente con la empresa</footer>
+  <footer class="portal-footer">Jeazy Club · Atención directa para nuevos miembros</footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../../supabase-config.js?v=2"></script>
   <script src="../../supabase-client.js?v=1"></script>
-  <script src="../../payment-config.js?v=whatsapp-contact-1"></script>
-  <script src="../../portal.js?v=whatsapp-contact-1"></script>
+  <script src="../../payment-config.js?v=nuevos-miembros-1"></script>
+  <script src="../../portal.js?v=nuevos-miembros-1"></script>
 </body>
 </html>
