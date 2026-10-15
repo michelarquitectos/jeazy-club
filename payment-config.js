@@ -1,7 +1,7 @@
 window.JEAZY_PAYMENT = Object.freeze({
-  feeLabel: '$1,420.00 MXN',
-  amountCents: 142000,
-  discountPercent: 15,
+  feeLabel: 'Sin importe publicado',
+  amountCents: null,
+  discountPercent: null,
   bankName: '',
   accountHolder: '',
   clabe: '',
